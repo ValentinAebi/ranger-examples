@@ -1,0 +1,3 @@
+package points;
+
+record Point[I sub Int, J sub Int](x: I, y: J)

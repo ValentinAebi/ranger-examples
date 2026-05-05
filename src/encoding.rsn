@@ -1,0 +1,27 @@
+package encoding;
+
+import lists.List;
+import lists.Lists.*;
+import points.Point;
+
+typealias NonZeroLength = [1,]
+typealias Coord(axisSize: NonZeroLength) = [0,axisSize-1]
+
+object Encoder {
+
+    fn decodeAll(data: List[Int], xSize: NonZeroLength, ySize: NonZeroLength) -> List[Point[Coord(xSize), Coord(ySize)]] {
+        val validData = removeOutliers(data);
+        return map(validData, fn (d) -> decode(d, xSize, ySize));
+    }
+
+    private fn removeOutliers(data: List[Int]) -> List[[0,]] =
+        filter(data, fn (d) -> d >= 0)
+
+    private fn decode(datapoint: [0,], xSize: NonZeroLength, ySize: NonZeroLength) -> Point[Coord(xSize), Coord(ySize)] {
+        val x = (datapoint / 64) % xSize;
+        val y = datapoint % ySize;
+        return new Point(x, y);
+    }
+
+}
+
