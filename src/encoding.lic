@@ -1,0 +1,31 @@
+package encoding;
+
+import arrays.Array;
+import lists.List;
+import lists.Lists.*;
+import points.Point;
+
+typealias NonZeroLength = [1,]
+typealias Coord(axisSize: NonZeroLength) = [0,axisSize-1]
+
+object Decoder {
+
+    fn decodeAll(data: Array[Int], xSize: NonZeroLength, ySize: NonZeroLength) -> List[Point[Coord(xSize), Coord(ySize)]] {
+        val validData = filter(data.toList(), fn (d) -> d >= 0);
+        return map(validData, fn (d) -> decode(d, xSize, ySize));
+    }
+
+    // expected encoding: 00...0 (16 bits) | x (8 bits) | y (8 bits)
+    private fn decode(datapoint: [0,], xSize: NonZeroLength, ySize: NonZeroLength) -> Point[Coord(xSize), Coord(ySize)] {
+        val x = clamp(0, xSize - 1, datapoint / 256);
+        val y = datapoint % ySize;
+        return new Point(x, y);
+    }
+
+    private fn clamp(min: Int, max: Int, x: Int | min <= max) -> [min, max] =
+        when x <= min then min
+        else when x <= max then x
+        else max
+
+}
+
