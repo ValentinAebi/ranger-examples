@@ -5,8 +5,8 @@ import lists.List;
 import lists.Lists.*;
 import points.Point;
 
-typealias NonZeroLength = [1,]
-typealias Coord(axisSize: NonZeroLength) = [0,axisSize-1]
+typealias NonZeroLength = [1..]
+typealias Coord(axisSize: NonZeroLength) = [0 ..< axisSize]
 
 object Decoder {
 
@@ -16,13 +16,13 @@ object Decoder {
     }
 
     // expected encoding: 00...0 (16 bits) | x (8 bits) | y (8 bits)
-    private fn decode(datapoint: [0,], xSize: NonZeroLength, ySize: NonZeroLength) -> Point[Coord(xSize), Coord(ySize)] {
+    private fn decode(datapoint: [0..], xSize: NonZeroLength, ySize: NonZeroLength) -> Point[Coord(xSize), Coord(ySize)] {
         val x = clamp(0, xSize - 1, datapoint / 256);
         val y = datapoint % ySize;
         return new Point(x, y);
     }
 
-    private fn clamp(min: Int, max: Int, x: Int | min <= max) -> [min, max] =
+    private fn clamp(min: Int, max: Int, x: Int where min <= max) -> [min..max] =
         when x <= min then min
         else when x <= max then x
         else max

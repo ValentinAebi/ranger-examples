@@ -4,8 +4,8 @@ import lists.List;
 import lists.Cons;
 import lists.Nil;
 
-typealias Length = [0,]
-typealias Idx[T](array: Array[T]) = [0, array.length() - 1]
+typealias Length = [0..]
+typealias Idx[T](array: Array[T]) = [0 ..< array.length()]
 
 class Array[T] {
 
