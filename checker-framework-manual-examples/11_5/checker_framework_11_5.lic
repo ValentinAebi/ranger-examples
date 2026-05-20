@@ -1,0 +1,29 @@
+package checker_framework_examples;
+
+import arrays.Array;
+
+object Ex_11_5 {
+
+    fn lessThan_v1(arr1: Array[Int], arr2: Array[Int] where arr1.length() == arr2.length()) -> Bool {
+        for (var i = 0; i < arr1.length(); i += 1) {
+            if (arr1.at(i) < arr2.at(i)) {
+                return true;
+            } else if (arr1.at(i) > arr2.at(i)) {
+                return false;
+            }
+        };
+        return false;
+    }
+
+    fn lessThan_v2(arr1: Array[Int], arr2: Array[Int] with it.length() == arr1.length()) -> Bool {
+        for (var i = 0; i < arr1.length(); i += 1) {
+            if (arr1.at(i) < arr2.at(i)) {
+                return true;
+            } else if (arr1.at(i) > arr2.at(i)) {
+                return false;
+            }
+        };
+        return false;
+    }
+
+}

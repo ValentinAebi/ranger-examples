@@ -1,0 +1,11 @@
+package checker_framework_examples;
+
+import arrays.Array;
+
+object Ex_11_4 {
+
+    fn getThirdElem(arr: Array[String] with it.length() >= 3) -> String {
+        return arr.at(2);
+    }
+
+}
