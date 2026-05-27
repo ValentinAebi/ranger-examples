@@ -1,0 +1,13 @@
+package checker_framework_examples;
+
+import arrays.Array;
+
+typealias ArrayOfMinLen[T](l: [0..]) = Array[T] with it.length() >= l
+
+object Ex_11_4 {
+
+    fn getThirdElem(arr: ArrayOfMinLen[String](3)) -> String {
+        return arr.at(2);
+    }
+
+}

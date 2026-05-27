@@ -1,0 +1,32 @@
+package arrays;
+
+import lists.List;
+import lists.Cons;
+import lists.Nil;
+
+typealias Length = [0..]
+typealias Idx[T](array: Array[T]) = [0 ..< array.length()]
+
+class Array[T] {
+
+    pure fn length(this) -> Length {
+        panic "compile to bytecode ARRAYLENGTH";
+    }
+
+    fn at(this, i: Idx(this)) -> T {
+        panic "compile to bytecode xALOAD"
+    }
+
+    fn set(this, i: Idx(this), value: T) {
+        panic "compile to bytecode xASTORE"
+    }
+
+    fn toList(this) -> List[T] {
+        var ls = new Nil();
+        for var i = length() - 1; i >= 0; i -= 1 {
+            ls = new Cons(first = at(i), rest = ls);
+        };
+        return ls;
+    }
+
+}
