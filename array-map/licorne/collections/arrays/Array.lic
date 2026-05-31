@@ -1,0 +1,30 @@
+package collections.arrays;
+
+import collections.Length;
+import collections.Idx;
+import collections.OrderedCollection;
+
+
+class Array[T](public size: Length) : OrderedCollection[T] {
+
+    fn get(this, i: Idx(this)) -> T {
+        panic "compile to bytecode xALOAD"
+    }
+
+    fn set(this, i: Idx(this), value: T) {
+        panic "compile to bytecode xASTORE"
+    }
+
+    fn indexOf(this, t: T) -> Idx(this)? {
+        for (var i = 0; i < size(); i += 1) {
+            if (get(i) == t) {
+                return i;
+            }
+        };
+        return null;
+    }
+
+}
+
+typealias ArrayOfSameLength[T, U](a: Array[U]) = Array[T] with it.size() == a.size()
+
