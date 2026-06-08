@@ -1,0 +1,13 @@
+
+class Test(
+    var x: [0..],
+    var y: [0..100] // ,
+    // var z: Int with when it % 2 == 0 then it >= 0 else it < 0   // not expressible in Licorne
+) {
+
+    fn absDiv(this, a: Int, b: Int with it != 0) -> [0..] {
+        val res = a / b;
+        return when res >= 0 then res else -res;
+    }
+
+}
