@@ -1,0 +1,14 @@
+package arrays;
+
+
+class Array[T](public size: Length) : Sized {
+
+    fn at(this, i: Idx(this)) -> T {
+        panic "compile to bytecode xALOAD"
+    }
+
+    fn set(this, i: Idx(this), t: T) {
+        panic "compile to bytecode xASTORE"
+    }
+
+}

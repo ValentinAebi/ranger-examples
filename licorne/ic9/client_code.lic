@@ -1,0 +1,17 @@
+import arrays.ArrayWrapper;
+import arrays.Idx;
+
+
+object Test {
+
+    fn clearIndex1[T](a: ArrayWrapper[T?], i: Idx(a)) {
+        a.set(i, null);
+    }
+
+    fn clearIndex2[T](a: ArrayWrapper[T?], i: Int) {
+        if (0 <= i && i < a.size()) {
+            a.set(i, null);
+        }
+    }
+
+}

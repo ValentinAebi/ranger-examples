@@ -1,0 +1,11 @@
+package collections;
+
+
+interface OrderedCollection[T] {
+
+    pure fn size(this) -> Length
+
+    fn get(this, i: Idx(this)) -> T
+
+}
+

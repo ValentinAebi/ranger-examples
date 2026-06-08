@@ -1,6 +1,0 @@
-package collections;
-
-
-typealias Length = [0..]
-
-typealias Idx[T](c: OrderedCollection[T]) = [0 ..< c.size()]

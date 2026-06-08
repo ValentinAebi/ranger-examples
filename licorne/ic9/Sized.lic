@@ -1,0 +1,5 @@
+package arrays;
+
+interface Sized {
+    pure fn size(this) -> Length
+}

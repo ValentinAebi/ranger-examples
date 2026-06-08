@@ -1,0 +1,9 @@
+package random;
+
+object Random {
+
+    fn uniformInRange(from: Int, to: Int where from <= to) -> [from..to] {
+        panic "not implemented"
+    }
+
+}

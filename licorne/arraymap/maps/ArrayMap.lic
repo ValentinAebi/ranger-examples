@@ -1,0 +1,71 @@
+package collections.maps;
+
+import collections.Length;
+import collections.arrays.Array;
+import collections.arrays.ArrayOfSameLength;
+
+
+// A (fixed-capacity) implementation of an ArrayMap
+class ArrayMap[K, V](
+    keys: Array[K?],
+    values: ArrayOfSameLength[V?](keys),
+    var currSize: [0 .. capacity()]
+) : Map[K, V] {
+
+    pure fn capacity(this) -> Length =
+        this.keys.size()
+
+    fn currentSize(this) -> [0 .. capacity()] =
+        this.currSize
+
+    fn get(this, k: K) -> V? {
+        val idx = this.keys.indexOf(k);
+        if (idx == null) {
+            return null;
+        } else {
+            return this.values.get(idx);
+        }
+    }
+
+    fn put(this, k: K, v: V) -> Bool {
+        val preSize = currentSize();
+        val canAdd = preSize < capacity();
+        if canAdd {
+            for (var i = 0; i < this.keys.size(); i += 1) {
+                if (this.keys.get(i) == null) {
+                    this.keys.set(i, k);
+                    this.values.set(i, v);
+                }
+            };
+            this.currSize = preSize + 1;
+        };
+        return canAdd;
+    }
+
+    fn remove(this, k: K) -> Bool {
+        val preSize = currentSize();
+        if (preSize > 0) {
+            val idx = this.keys.indexOf(k);
+            if idx == null {
+                return false;
+            };
+            this.keys.set(idx, null);
+            this.values.set(idx, null);
+            this.currSize = preSize - 1;
+            return true;
+        };
+        return false;
+    }
+
+}
+
+object ArrayMaps {
+
+    fn newEmptyOfCapacity[K, V](capacity: Length) -> ArrayMap[K, V] {
+        val keys = new Array(size = capacity);
+        val values = new Array(size = capacity);
+        return new ArrayMap(keys, values, currSize = 0);
+    }
+
+}
+

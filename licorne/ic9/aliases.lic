@@ -1,0 +1,4 @@
+package arrays;
+
+typealias Length = [0..]
+typealias Idx(seq: Sized) = [0 ..< seq.size()]

@@ -1,0 +1,26 @@
+package arrays;
+
+
+class ArrayWrapper[T] (
+    public size: Length,
+    wrapped: Array[T] with it.size() == size
+) : Sized {
+
+    fn set(this, i: Idx(this), elem: T) {
+        this.wrapped.set(i, elem);
+    }
+
+    fn get(this, i: Idx(this)) -> T {
+        return this.wrapped.at(i);
+    }
+
+}
+
+object ArrayWrappers {
+
+    fn mkNew[T](size: Length) -> ArrayWrapper[T] {
+        val wrapped = new Array(size);
+        return new ArrayWrapper(size, wrapped);
+    }
+
+}
