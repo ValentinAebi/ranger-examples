@@ -1,0 +1,19 @@
+import arrays.Array;
+
+
+object PositiveMax {
+
+    fn maxPos(a: Array[Int]) -> [0..] {
+        var k = 0;
+        var max = 0;
+        while (k < a.length()) {
+            var v = a.at(k);
+            if (v > 0 && v > max) {
+                max = v;
+            };
+            k += 1;
+        };
+        return max;
+    }
+
+}
