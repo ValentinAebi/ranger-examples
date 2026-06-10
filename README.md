@@ -11,7 +11,7 @@ Some examples are taken from the [manual of the Checker Framework](https://check
 
 ## Running the type-checkers
 
-Licorne: in the [`licorne` directory](./licorne), run `java -jar licorne-compiler.jar compile <files or directory>`, e.g. `java -jar .\licorne-compiler.jar compile .\arraymap\*.lic`
+Licorne: in the [`licorne` directory](./licorne), run `java -jar licorne-compiler.jar compile <files or directory>`, e.g. `java -jar .\licorne-compiler.jar compile .\arraymap\`
 
 Checker Framework: in the [`java-index-checker` directory](./java-index-checker), run `mvn clean compile`
 

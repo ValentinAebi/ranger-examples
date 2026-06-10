@@ -10,10 +10,10 @@ object Example {
     fn filterLessThan_adHoc(a: Int, var ls: List[Int]) -> List[[..<a]] {
         var filteredReversed = new Nil();
         while ls is Cons {
-            if ls.first <= a {  // ERROR: should be <
-                filteredReversed = new Cons(first = ls.first, rest = filteredReversed);
+            if ls.first() <= a {  // ERROR: should be <
+                filteredReversed = new Cons(first = ls.first(), rest = filteredReversed);
             };
-            ls = ls.rest;
+            ls = ls.rest();
         };
         return reverse(filteredReversed);
     }

@@ -8,9 +8,9 @@ object Eithers {
 
     fn compute[L, R, T](e: Either[L, R], lf: fn (L) -> T, rf: fn (R) -> T) -> T {
         if e is Left {
-            return lf(e.l);
+            return lf(e.l());
         } else if e is Right {
-            return rf(e.r);
+            return rf(e.r());
         }
     }
 
