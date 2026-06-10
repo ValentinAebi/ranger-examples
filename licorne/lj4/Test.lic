@@ -1,0 +1,15 @@
+
+object Test {
+
+    fn getYear() -> [2021..] = 2024
+
+    fn test() {
+        val a = 1998;
+        val c = Cars.newCarWithDefaultValues();
+        c.setYear(a);
+
+        val j: [1801..] = c.getYear();
+        val k: [2021..] = getYear();
+    }
+
+}
