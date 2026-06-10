@@ -18,12 +18,12 @@ public class FilterLessThan {
     }
 
     static List<@LessThan("#1") Integer> filterLessThan_too_conservative(int a, List<Integer> ls) {
-        List<@LessThan("#1") Integer> revFiltered = new Nil<>();
+        List<@LessThan("a") Integer> revFiltered = new Nil<>();
         var rem = ls;
         while (rem instanceof Cons<Integer> cons) {
             var head = cons.head;
             if (head < a) {     // here the bound is correct, but the Index Checker fails to check it
-                revFiltered = new Cons<@LessThan("#1") Integer>(head, revFiltered);
+                revFiltered = new Cons<@LessThan("a") Integer>(head, revFiltered);
             }
             rem = cons.tail;
         }
