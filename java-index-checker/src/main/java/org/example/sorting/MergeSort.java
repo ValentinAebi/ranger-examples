@@ -25,7 +25,6 @@ public class MergeSort {
     private static <T extends Comparable<T>> void doSort(T[] arr, @IndexFor({"#1", "aux"}) int left, @IndexFor({"#1", "aux"}) int right) {
         if (left < right) {
             int mid = (left + right) >>> 1;
-            assert left <= mid && mid <= right: "@AssumeAssertion(index): Calculation ensures mid is non-negative";
             doSort(arr, left, mid);
             if (mid + 1 < right) // trivial logic that would get handled by the next recursive call, but checker was complaining :)
                 doSort(arr, mid + 1, right);
@@ -35,14 +34,12 @@ public class MergeSort {
     
     @SuppressWarnings("unchecked")
     private static <T extends Comparable<T>> void merge(T[] arr, @IndexFor({"#1", "aux"}) int left, @IndexFor({"#1", "aux"}) int mid, @IndexFor({"#1", "aux"}) int right) {
-        assert 0 <= mid && mid < aux.length - 1: "@AssumeAssertion(index): since mid is the average between left and right, it will always be in the array bounds";
         @IndexOrHigh("aux") int i = left, j = mid + 1;
 
         assert left <= right: "@AssumeAssertion(index): left should be less than or equal right";
         System.arraycopy(arr, left, aux, left, right + 1 - left);
 
         for (@IndexOrHigh("arr") int k = left; k <= right; k++) {
-            assert k < arr.length: "@AssumeAssertion(index): k is always less than the length of arr";
             if (j > right) {
                 assert i < aux.length: "@AssumeAssertion(index): i is always less than the length of aux";
                 arr[k] = (T) aux[i++];
