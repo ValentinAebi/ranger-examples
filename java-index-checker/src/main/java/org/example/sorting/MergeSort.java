@@ -1,5 +1,6 @@
 // Original code taken from https://github.com/TheAlgorithms/Java/blob/master/src/main/java/com/thealgorithms/sorts/MergeSort.java
-// The Checker Framework annotations, as well as some modifications to make the code compiant to it, were implemented by Arnaud Fauconnet as part of an assignment for the Software analysis course (USI Università della Svizerra Italiana, 2024).
+// Most of the Checker Framework annotations, as well as some modifications to make the code compiant to it, were implemented by Arnaud Fauconnet as part of an assignment for the Software analysis course (USI Università della Svizerra Italiana, 2024).
+// Additional modifications were added by the repository's author, including the removal of the private static field to make the code closer to the Licorne implementation of it (which also makes it thread-safe).
 
 package org.example.sorting;
 
@@ -8,32 +9,31 @@ import org.checkerframework.checker.index.qual.IndexFor;
 
 import static org.example.sorting.SortUtils.less;
 
+import java.util.Arrays;
+
 
 public class MergeSort {
-
-    @SuppressWarnings("rawtypes") private static Comparable[] aux;
-
     
     public <T extends Comparable<T>> T[] sort(T[] unsorted) {
         if (unsorted.length == 0) // adding this logic to avoid annoying warnings
             return unsorted;
-        aux = new Comparable[unsorted.length];
-        doSort(unsorted, 0, unsorted.length - 1);
+        T[] aux = Arrays.copyOf(unsorted, unsorted.length);
+        assert aux.length == unsorted.length : "@AssumeAssertion(index): semantics of copyOf";
+        doSort(unsorted, aux, 0, unsorted.length - 1);
         return unsorted;
     }
 
-    private static <T extends Comparable<T>> void doSort(T[] arr, @IndexFor({"#1", "aux"}) int left, @IndexFor({"#1", "aux"}) int right) {
+    private static <T extends Comparable<T>> void doSort(T[] arr, T[] aux, @IndexFor({"#1", "#2"}) int left, @IndexFor({"#1", "#2"}) int right) {
         if (left < right) {
             int mid = (left + right) >>> 1;
-            doSort(arr, left, mid);
+            doSort(arr, aux, left, mid);
             if (mid + 1 < right) // trivial logic that would get handled by the next recursive call, but checker was complaining :)
-                doSort(arr, mid + 1, right);
-            merge(arr, left, mid, right);
+                doSort(arr, aux, mid + 1, right);
+            merge(arr, aux, left, mid, right);
         }
     }
-    
-    @SuppressWarnings("unchecked")
-    private static <T extends Comparable<T>> void merge(T[] arr, @IndexFor({"#1", "aux"}) int left, @IndexFor({"#1", "aux"}) int mid, @IndexFor({"#1", "aux"}) int right) {
+
+    private static <T extends Comparable<T>> void merge(T[] arr, T[] aux, @IndexFor({"#1", "#2"}) int left, @IndexFor({"#1", "#2"}) int mid, @IndexFor({"#1", "#2"}) int right) {
         @IndexOrHigh("aux") int i = left, j = mid + 1;
 
         assert left <= right: "@AssumeAssertion(index): left should be less than or equal right";
