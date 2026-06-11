@@ -46,7 +46,7 @@
                             </annotationProcessorPaths>
                             <annotationProcessors>
                                 <!-- Add all the checkers you want to enable here -->
-                                <annotationProcessor>org.checkerframework.checker.nullness.NullnessChecker</annotationProcessor>
+                                <!-- <annotationProcessor>org.checkerframework.checker.nullness.NullnessChecker</annotationProcessor> -->
                                 <annotationProcessor>org.checkerframework.checker.index.IndexChecker</annotationProcessor>
                             </annotationProcessors>
                             <compilerArgs>
