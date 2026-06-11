@@ -11,14 +11,14 @@ import liquidjava.specification.RefinementAlias;
 @RefinementAlias("Coord(int c, int axisSize) { 0 <= c && c < axisSize}")
 public class Decoder {
     
-    public static List<Point<Integer, Integer>> decodeAll(
+    public static List<Point<@Refinement("Coord(_, xSize)") Integer, @Refinement("Coord(_, xSize)") Integer>> decodeAll(
         int[] data, @Refinement("NonZeroLength(_)") int xSize, @Refinement("NonZeroLength(_)") int ySize
     ) {
         var validData = Arrays.stream(data).filter(d -> d >= 0);
         return validData.mapToObj(d -> decode(d, xSize, ySize)).toList();
     }
 
-    private static Point<Integer, Integer> decode(
+    private static Point<@Refinement("Coord(_, xSize)") Integer, @Refinement("Coord(_, xSize)") Integer> decode(
         int datapoint, @Refinement("NonZeroLength(_)") int xSize, @Refinement("NonZeroLength(_)") int ySize
     ) {
         var x = clamp(0, xSize - 1, datapoint / 256);
