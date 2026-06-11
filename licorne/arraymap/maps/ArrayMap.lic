@@ -6,7 +6,7 @@ import collections.arrays.ArrayOfSameLength;
 
 
 // A (fixed-capacity) implementation of an ArrayMap
-class ArrayMap[K, V](
+class ArrayMap[K sub Any, V sub Any](
     keys: Array[K?],
     values: ArrayOfSameLength[V?](keys),
     var currSize: [0 .. capacity()]
@@ -61,7 +61,7 @@ class ArrayMap[K, V](
 
 object ArrayMaps {
 
-    fn newEmptyOfCapacity[K, V](capacity: Length) -> ArrayMap[K, V] {
+    fn newEmptyOfCapacity[K sub Any, V sub Any](capacity: Length) -> ArrayMap[K, V] {
         val keys = new Array(size = capacity);
         val values = new Array(size = capacity);
         return new ArrayMap(keys, values, currSize = 0);
