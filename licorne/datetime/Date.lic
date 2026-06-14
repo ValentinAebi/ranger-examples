@@ -6,7 +6,7 @@ typealias Year = Int
 typealias Month = [1..12]
 typealias DayOfMonth(year: Year, month: Month) = [1..nDaysInMonth(year, month)]
 
-class Date(public year: Year, public month: Month, public day: DayOfMonth(year, month)) {
+record Date(year: Year, month: Month, day: DayOfMonth(year, month)) {
 
     pure fn nextDay(this) -> Date {
         if (this.day() < nDaysInMonth(this.year(), this.month())) {

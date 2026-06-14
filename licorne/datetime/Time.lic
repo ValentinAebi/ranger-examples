@@ -6,7 +6,7 @@ typealias Minutes = [0..59]
 typealias Seconds = [0..59]
 
 
-class Time(public hours: Hours, public minutes: Minutes, public seconds: Seconds) {
+record Time(hours: Hours, minutes: Minutes, seconds: Seconds) {
 
     fn deltaTime(this, h: Int, min: Int, sec: Int) -> Time {
         val sSum = seconds() + sec;
