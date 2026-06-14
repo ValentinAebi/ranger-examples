@@ -10,19 +10,19 @@ record Time(hours: Hours, minutes: Minutes, seconds: Seconds) {
 
     fn deltaTime(this, h: Int, min: Int, sec: Int) -> Time {
         val sSum = seconds() + sec;
-        val seconds = sSum % 60;
-        val mSum = minutes() + min + (sSum / 60);
-        val minutes = mSum % 60;
-        val hSum = hours() + h + (mSum / 60);
-        val hours = hSum % 24;
+        val seconds = (sSum % 60 + 60) % 60;
+        val mSum = minutes() + min + (sSum - seconds) / 60;
+        val minutes = (mSum % 60 + 60) % 60;
+        val hSum = hours() + h + (mSum - minutes) / 60;
+        val hours = (hSum % 24 + 24) % 24;
         return new Time(hours, minutes, seconds);
     }
 
     fn deltaHours(this, h: Int) -> Time = deltaTime(h, 0, 0)
 
-    fn deltaMinutes(this, min: Int) -> Time = deltaTime(0, min, 0)
+    fn deltaMinutes(this, m: Int) -> Time = deltaTime(0, m, 0)
 
-    fn deltaSeconds(this, sec: Int) -> Time = deltaTime(0, 0, sec)
+    fn deltaSeconds(this, s: Int) -> Time = deltaTime(0, 0, s)
 
 }
 
@@ -33,13 +33,13 @@ class MutTime(
     var seconds: Seconds
 ) {
 
-    fn moveBy(this, h: Int, min: Int, sec: Int) {
-        val sSum = this.seconds + sec;
-        this.seconds = sSum % 60;
-        val mSum = this.minutes + min + (sSum / 60);
-        this.minutes = mSum % 60;
+    fn moveBy(this, h: Int, m: Int, s: Int) {
+        val sSum = this.seconds + s;
+        this.seconds = (sSum % 60 + 60) % 60;
+        val mSum = this.minutes + m + (sSum / 60);
+        this.minutes = (mSum % 60 + 60) % 60;
         val hSum = this.hours + h + (mSum / 60);
-        this.hours = hSum % 24;
+        this.hours = (hSum % 24 + 24) % 24;
     }
 
     fn moveByHours(this, h: Int) {
