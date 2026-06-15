@@ -43,6 +43,7 @@ public class ArrayMap<K, V> {
                 if (this.keys[i] == null) {
                     this.keys[i] = k;
                     this.values[i] = v;
+                    break;
                 }
             }
             this.currSize = preSize + 1;
