@@ -1,8 +1,8 @@
 
 class Test(
     var x: [0..],
-    var y: [0..100] // ,
-    // var z: Int with when it % 2 == 0 then it >= 0 else it < 0   // not expressible in Licorne
+    var y: [0..100],
+    var z: Int with it % 2 == 0 && it >= 0 || it % 2 != 0 && it < 0   // Licorne does not allow type predicates to contains ternaries
 ) {
 
     fn absDiv(this, a: Int, b: Int with it != 0) -> [0..] {
