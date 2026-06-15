@@ -7,7 +7,7 @@ object PositiveMax {
         var k = 0;
         var max = 0;
         while (k < a.length()) {
-            var v = a.at(k);
+            val v = a.at(k);
             if (v > 0 && v > max) {
                 max = v;
             };
