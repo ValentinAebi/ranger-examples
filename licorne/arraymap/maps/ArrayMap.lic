@@ -64,11 +64,8 @@ class ArrayMap[K sub Any, V sub Any](
 
 object ArrayMaps {
 
-    fn newEmptyOfCapacity[K sub Any, V sub Any](capacity: Length) -> ArrayMap[K, V] {
-        val keys = new Array(size = capacity);
-        val values = new Array(size = capacity);
-        return new ArrayMap(keys, values, currSize = 0);
-    }
+    fn newEmptyOfCapacity[K sub Any, V sub Any](capacity: Length) -> ArrayMap[K, V] =
+        new ArrayMap(keys = new Array(size = capacity), values = new Array(size = capacity), currSize = 0);
 
 }
 
