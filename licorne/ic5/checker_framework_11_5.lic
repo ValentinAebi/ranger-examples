@@ -6,7 +6,7 @@ typealias ArrOfSameLen[T,U](arr: Array[U]) = Array[T] with it.length() == arr.le
 
 object Ex_11_5 {
 
-    fn lessThan_v1(a1: Array[Int], a2: ArrOfSameLen[Int](a1)) -> Bool {
+    fn lessThan_correct(a1: Array[Int], a2: ArrOfSameLen[Int](a1)) -> Bool {
         for (var i = 0; i < a1.length(); i += 1) {
             if (a1.at(i) < a2.at(i)) {
                 return true;
@@ -17,6 +17,18 @@ object Ex_11_5 {
         return false;
     }
 
+    fn lessThan_buggy(a1: Array[Int], a2: ArrOfSameLen[Int](a1)) -> Bool {
+        for (var i = 0; i < a1.length(); i -= 1) {  // ERROR: should be i += 1
+            if (a1.at(i) < a2.at(i)) {
+                return true;
+            } else if (a1.at(i) > a2.at(i)) {
+                return false;
+            }
+        };
+        return false;
+    }
+
+    // alternative using explicit precondition
     fn lessThan_v2(arr1: Array[Int], arr2: Array[Int] where arr1.length() == arr2.length()) -> Bool {
         for (var i = 0; i < arr1.length(); i += 1) {
             if (arr1.at(i) < arr2.at(i)) {

@@ -3,10 +3,19 @@ object Test {
 
     fn getYear() -> [2021..] = 2024
 
-    fn test() {
+    fn test_correct() {
         val a = 1998;
         val c = Cars.newCarWithDefaultValues();
         c.setYear(a);
+
+        val j: [1801..] = c.getYear();
+        val k: [2021..] = getYear();
+    }
+
+    fn test_buggy() {
+        val a = 998;
+        val c = Cars.newCarWithDefaultValues();
+        c.setYear(a);        // ERROR: bad value
 
         val j: [1801..] = c.getYear();
         val k: [2021..] = getYear();

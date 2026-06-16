@@ -45,7 +45,7 @@ public class MergeSort {
                 assert i < aux.length: "@AssumeAssertion(index): i is always less than the length of aux";
                 arr[k] = (T) aux[i++];
             } else if (i > mid) {
-                arr[k] = (T) aux[j++];
+                arr[k] = (T) aux[j--];  // ERROR: should be j++ here
             } else if (less(aux[j], aux[i])) {
                 arr[k] = (T) aux[j++];
             } else {

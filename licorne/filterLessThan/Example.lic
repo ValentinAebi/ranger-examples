@@ -7,7 +7,18 @@ import lists.Lists.*;
 
 object Example {
 
-    fn filterLessThan_adHoc(a: Int, var ls: List[Int]) -> List[[..<a]] {
+    fn filterLessThan_adHoc_correct(a: Int, var ls: List[Int]) -> List[[..<a]] {
+        var filteredReversed = new Nil();
+        while ls is Cons {
+            if ls.first() < a {
+                filteredReversed = new Cons(first = ls.first(), rest = filteredReversed);
+            };
+            ls = ls.rest();
+        };
+        return reverse(filteredReversed);
+    }
+
+    fn filterLessThan_adHoc_buggy(a: Int, var ls: List[Int]) -> List[[..<a]] {
         var filteredReversed = new Nil();
         while ls is Cons {
             if ls.first() <= a {  // ERROR: should be <
@@ -18,7 +29,10 @@ object Example {
         return reverse(filteredReversed);
     }
 
-    fn filterLessThan_better(a: Int, ls: List[Int]) -> List[[..<a]] =
+    fn filterLessThan_functional_correct(a: Int, ls: List[Int]) -> List[[..<a]] =
+        filter(ls, fn (elem) -> elem < a)
+
+    fn filterLessThan_functional_buggy(a: Int, ls: List[Int]) -> List[[..<a]] =
         filter(ls, fn (elem) -> elem <= a)  // ERROR: should be elem < a
 
 }

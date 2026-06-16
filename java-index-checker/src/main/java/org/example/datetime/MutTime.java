@@ -23,7 +23,8 @@ public class MutTime {
         var mSum = this.minutes + m + (sSum / 60);
         this.minutes = (mSum % 60 + 60) % 60;
         var hSum = this.hours + h + (mSum / 60);
-        this.hours = (hSum % 24 + 24) % 24;
+        // ERROR: should be normalized to 24, not 60
+        this.hours = (hSum % 60 + 60) % 60;
     }
 
     public void moveByHours(int h) {

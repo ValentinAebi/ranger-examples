@@ -27,7 +27,8 @@ class ArrayMap[K: ClassTag, V: ClassTag] private(
     val canAdd = preSize < capacity
     if (canAdd) {
       boundary {
-        for (i <- keys.indices) {
+        // ERROR: should be until instead of to (or better: for i <- keys.indices)
+        for (i <- 0 to keys.length) {
           if (keys(i) == null) {
             keys(i) = Some(k)
             values(i) = Some(v)

@@ -6,7 +6,7 @@ import liquidjava.specification.RefinementAlias;
 
 public class IC7 {
     
-    public static String removeSubstring(String original, String removed) {
+    public static String removeSubstring_correct(String original, String removed) {
         int i = original.indexOf(removed);
         if (i != -1) {
             // crashes LiquidJava

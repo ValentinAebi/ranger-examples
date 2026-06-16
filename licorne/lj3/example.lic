@@ -5,7 +5,12 @@ class Test(
     var z: Int with it % 2 == 0 && it >= 0 || it % 2 != 0 && it < 0   // Licorne does not allow type predicates to contains ternaries
 ) {
 
-    fn absDiv(this, a: Int, b: Int with it != 0) -> [0..] {
+    fn absDiv_correct(this, a: Int, b: Int with it != 0) -> [0..] {
+        val res = a / b;
+        return when res >= 0 then res else -res;
+    }
+
+    fn absDiv_buggy(this, a: Int, b: Int) -> [0..] {
         val res = a / b;
         return when res >= 0 then res else -res;
     }

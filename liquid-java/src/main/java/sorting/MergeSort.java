@@ -48,7 +48,7 @@ class MergeSort {
             if (j > right) {
                 arr[k] = tempArray[i++];
             } else if (i > mid) {
-                arr[k] = tempArray[j++];
+                arr[k] = tempArray[j--];    // ERROR: should be j-- here
             } else if (less(tempArray[j], tempArray[i])) {
                 arr[k] = tempArray[j++];
             } else {

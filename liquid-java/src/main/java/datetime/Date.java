@@ -20,7 +20,8 @@ record Date(int year, @Refinement("1 <= _ && _ <= 12") int month, @Refinement("1
         if (this.day() > 1) {
             return new Date(this.year(), this.month(), this.day() - 1);
         } else if (this.month() > 1) {
-            return new Date(this.year(), this.month() - 1, nDaysInMonth(this.year(), this.month() - 1));
+            // ERROR: the programmer forgot to update `this.month() + 1` to `this.month() - 1` after copy-pasting from nextDay
+            return new Date(this.year(), this.month() + 1, nDaysInMonth(this.year(), this.month() - 1));
         } else {
             return new Date(this.year() - 1, 12, nDaysInMonth(this.year() - 1, 12));
         }

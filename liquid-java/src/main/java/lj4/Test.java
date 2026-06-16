@@ -10,7 +10,7 @@ public class Test {
         return 2024;
     }
 
-    public static void main(String[] args) {
+    public static void test_correct() {
         int a = 1998;
         Car c = new Car();
         c.setYear(a);
@@ -21,4 +21,17 @@ public class Test {
         @Refinement("_ > 2020")
         int k = getYear();
     }
+
+    public static void test_buggy() {
+        int a = 998;
+        Car c = new Car();
+        c.setYear(a);
+
+        @Refinement("_ > 1800")
+        int j = c.getYear();
+
+        @Refinement("_ > 2020")
+        int k = getYear();
+    }
+
 }

@@ -8,12 +8,20 @@ typealias ArrayOfLen[T](l: [0..]) = Array[T] with it.length() == l
 
 object Ex_11_4 {
 
-    fn getThirdElem_1(arr: ArrayOfMinLen[String](3)) -> String {
+    fn getThirdElem_1_correct(arr: ArrayOfMinLen[String](3)) -> String {
         return arr.at(2);
     }
 
-    fn getThirdElem_2(arr: ArrayOfLen[String](3)) -> String {
+    fn getThirdElem_1_buggy(arr: ArrayOfMinLen[String](3)) -> String {
+        return arr.at(3);
+    }
+
+    fn getThirdElem_2_correct(arr: ArrayOfLen[String](3)) -> String {
         return arr.at(2);
+    }
+
+    fn getThirdElem_2_buggy(arr: ArrayOfLen[String](3)) -> String {
+        return arr.at(3);
     }
 
 }

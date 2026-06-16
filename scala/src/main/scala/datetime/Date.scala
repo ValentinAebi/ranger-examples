@@ -21,7 +21,8 @@ final case class Date(year: Year, month: Month, day: DayOfMonth) {
     if (this.day > 1) {
       new Date(year = this.year, month = this.month, day = this.day - 1);
     } else if (this.month > 1) {
-      new Date(year = this.year, month = this.month - 1, day = nDaysInMonth(this.year, this.month - 1));
+      // ERROR: the programmer forgot to update `this.month() + 1` to `this.month() - 1` after copy-pasting from nextDay
+      new Date(year = this.year, month = this.month + 1, day = nDaysInMonth(this.year, this.month - 1));
     } else {
       new Date(year = this.year - 1, month = 12, day = 31);
     }

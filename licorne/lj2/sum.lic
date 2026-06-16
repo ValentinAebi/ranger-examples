@@ -1,13 +1,24 @@
 
 typealias Nat = [0..]
 
-object Test {
+object Sum {
 
-    fn sum(n: Int) -> Nat & [n..] {
+    fn sum_original(n: Int) -> Nat & [n..] {
         if (n <= 1) {
             return 0;
         } else {
-            val t1 = sum(n-1);
+            val t1 = sum_original(n-1);
+            return n + t1;
+        }
+    }
+
+    fn sum_fixed(n: Int) -> Nat & [n..] {
+        if (n < 0) {
+            return 0;
+        } else if (n <= 1) {
+            return n;
+        } else {
+            val t1 = sum_fixed(n-1);
             return n + t1;
         }
     }

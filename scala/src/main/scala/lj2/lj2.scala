@@ -1,11 +1,22 @@
 package lj2
 
 
-def sum(n: Int): Int = {
+def sum_original(n: Int): Int = {
   if (n <= 1) {
+    0
+  } else {
+    val t1 = sum_original(n-1)
+    n + t1
+  }
+}
+
+def sum_fixed(n: Int): Int = {
+  if (n < 0) {
+    0
+  } else if (n <= 1) {
     n
   } else {
-    val t1 = sum(n-1)
+    val t1 = sum_original(n-1)
     n + t1
   }
 }

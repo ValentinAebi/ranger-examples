@@ -39,7 +39,8 @@ public class ArrayMap<K, V> {
         }
         var preSize = currentSize();
         if (preSize < this.keys.length) {
-            for (int i = 0; i < this.keys.length; i++) {
+            // ERROR: should be < instead of <=
+            for (int i = 0; i <= this.keys.length; i++) {
                 if (this.keys[i] == null) {
                     this.keys[i] = k;
                     this.values[i] = v;

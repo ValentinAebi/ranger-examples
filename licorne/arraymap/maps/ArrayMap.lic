@@ -32,7 +32,8 @@ class ArrayMap[K sub Any, V sub Any](
         val canAdd = preSize < capacity();
         if canAdd {
             var stop = false;
-            for (var i = 0; i < this.keys.size() && !stop; i += 1) {
+            // ERROR: should be < instead of <=
+            for (var i = 0; i <= this.keys.size() && !stop; i += 1) {
                 if (this.keys.get(i) == null) {
                     this.keys.set(i, k);
                     this.values.set(i, v);

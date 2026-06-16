@@ -1,10 +1,18 @@
 package lj1
 
 
-def fib(n: Int): Int = {
+def fib_original(n: Int): Int = {
+  if (n <= 1) {
+    0
+  } else {
+    fib_original(n - 1) + fib_original(n - 2)
+  }
+}
+
+def fib_base_case_fixed(n: Int): Int = {
   if (n <= 1) {
     n
   } else {
-    fib(n - 1) + fib(n - 2)
+    fib_original(n - 1) + fib_original(n - 2)
   }
 }

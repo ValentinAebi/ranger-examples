@@ -33,7 +33,7 @@ private def merge[T](array: Array[T], tmpArray: Array[T], lt: (T, T) => Boolean,
       i += 1
     } else if (i > mid) {
       array(k) = tmpArray(j)
-      j += 1
+      j -= 1  // ERROR: should be j += 1 here
     } else if (lt(tmpArray(j), tmpArray(i))) {
       array(k) = tmpArray(j)
       j += 1

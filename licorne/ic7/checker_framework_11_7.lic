@@ -6,9 +6,9 @@ typealias Length = [0..]
 
 object Ex_11_7 {
 
-    fn removeSubstring_v1(original: String, removed: String where length(removed) <= length(original)) -> String {
+    fn removeSubstring_correct_1(original: String, removed: String with length(it) <= length(original)) -> String {
         val i = indexOf(original, removed);
-        if (i != -1) {
+        if (i != -1) {    // checking using !=
             return concat(
                 substring(original, 0, i),
                 substring(original, i + length(removed), length(original))
@@ -17,7 +17,28 @@ object Ex_11_7 {
         return original;
     }
 
-    fn removeSubstring_v2(original: String, removed: String with length(it) <= length(original)) -> String {
+    fn removeSubstring_correct_2(original: String, removed: String with length(it) <= length(original)) -> String {
+        val i = indexOf(original, removed);
+        if (i > -1) {      // <- checking using >
+            return concat(
+                substring(original, 0, i),
+                substring(original, i + length(removed), length(original))
+            );
+        };
+        return original;
+    }
+
+    fn removeSubstring_buggy(original: String, removed: String with length(it) <= length(original)) -> String {
+        val i = indexOf(original, removed);
+        // ERROR: missing check for i == -1
+        return concat(
+            substring(original, 0, i),
+            substring(original, i + length(removed), length(original))
+        );
+    }
+
+    // alternative using explicit precondition
+    fn removeSubstring_precond(original: String, removed: String where length(removed) <= length(original)) -> String {
         val i = indexOf(original, removed);
         if (i != -1) {
             return concat(
@@ -39,11 +60,11 @@ object StringOpsPlaceholder {
         panic "not implemented"
     }
 
-    fn indexOf(s: String, target: String where length(target) <= length(s)) -> [-1 ..< length(s) - length(target)] {
+    fn indexOf(s: String, target: String with length(it) <= length(s)) -> [-1 ..< length(s) - length(target)] {
         panic "not implemented"
     }
 
-    fn substring(s: String, from: Position(s), end: Position(s) where from <= end) -> StringOfLen(end - from) {
+    fn substring(s: String, from: Position(s), end: Position(s) & [from..]) -> StringOfLen(end - from) {
         panic "not implemented"
     }
 
