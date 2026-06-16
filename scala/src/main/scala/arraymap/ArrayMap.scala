@@ -15,14 +15,14 @@ class ArrayMap[K: ClassTag, V: ClassTag] private(
 
   def currSize: Int = _currSize
 
-  def apply(k: K): Option[V] = {
+  def get(k: K): Option[V] = {
     val idx = keys.indexOf(Some(k))
     Option.when(idx != -1) {
       values(idx)
     }.flatten
   }
 
-  def update(k: K, v: V): Boolean = {
+  def put(k: K, v: V): Boolean = {
     val preSize = currSize
     val canAdd = preSize < capacity
     if (canAdd) {

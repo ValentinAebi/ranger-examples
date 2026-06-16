@@ -10,9 +10,10 @@ public class ArrayMap<K, V> {
     private final V @SameLen("this.keys")[] values;
     private @IndexOrHigh("this.keys") int currSize;
 
-    public ArrayMap(K[] keys, V @SameLen("#1")[] values) {
-        this.keys = keys;
-        this.values = values;
+    @SuppressWarnings("unchecked")
+    public ArrayMap(@NonNegative int capacity) {
+        this.keys = (K[]) new Object[capacity];
+        this.values = (V[]) new Object[this.keys.length];
         this.currSize = 0;
     }
 
@@ -66,13 +67,6 @@ public class ArrayMap<K, V> {
             return true;
         }
         return false;
-    }
-
-    @SuppressWarnings("unchecked")
-    public static <K, V> ArrayMap<K, V> newEmptyOfCapacity(@NonNegative int capacity) {
-        var keys = (K[]) new Object[capacity];
-        var values = (V[]) new Object[keys.length];  // new Object[capacity] fails the VC on the next line
-        return new ArrayMap<>(keys, values);
     }
 
 }
