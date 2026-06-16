@@ -19,8 +19,9 @@ private def doSort[T](array: Array[T], tmpArray: Array[T],
   }
 }
 
-private def merge[T](array: Array[T], tmpArray: Array[T], lt: (T, T) => Boolean, left: Int, mid: Int, right: Int): Unit = {
-  require(left < right)
+private def merge[T](array: Array[T], tmpArray: Array[T], lt: (T, T) => Boolean,
+                     left: Int, mid: Int, right: Int): Unit = {
+  require(left < right)   // excluded from l.o.c. count
 
   var i = left
   var j = mid + 1

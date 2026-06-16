@@ -18,7 +18,7 @@ object MergeSort {
         if (array.length() == 0) {
             return;
         };
-        val tmpArray = new Array[T](length = array.length());
+        val tmpArray = new Array(length = array.length());
         doSort(array, tmpArray, lessThan, 0, array.length() - 1);
     }
 
@@ -33,8 +33,7 @@ object MergeSort {
     }
 
     private fn merge[T](array: Array[T], tmpArray: ArrayOfLen[T](array.length()),
-                        lt: fn (T,T) -> Bool,
-                        left: Idx(array), mid: Idx(array), right: Idx(array) where left < right) {
+                        lt: fn (T,T) -> Bool, left: Idx(array), mid: Idx(array), right: Idx(array) & [left..]) {
         var i = left;
         var j = mid + 1;
         arrayCopy(array, left, tmpArray, left, right + 1 - left);
