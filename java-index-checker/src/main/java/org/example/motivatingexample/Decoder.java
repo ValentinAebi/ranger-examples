@@ -25,7 +25,7 @@ public class Decoder {
     ) {
         var zero = 0;
         assert zero < xSize - 1 + 1 : "@AssumeAssertion(index) : xSize is @Positive";
-        var x = clamp(xSize - 1, zero, datapoint >> 8);
+        var x = clamp(zero, xSize - 1, datapoint >> 8);
         assert x < xSize : "@AssumeAssertion(index) : spec of clamp tells us that x < xSize - 1 + 1";
         assert x >= 0 : "@AssumeAssertion(index) : semantics of clamp";
         var y = datapoint % ySize;
@@ -33,9 +33,8 @@ public class Decoder {
         return new Point<>(x, y);
     }
 
-    // It seems that the Index Checker is unable to express the constraint result >= min.
-    // Also we have to swap min and max since the Checker Framework does not allow to express @GreaterThan and we need a way to express min <= max.
-    private static @LessThan("#1 + 1") int clamp(int max, @LessThan("#1 + 1") int min, int x) {
+    
+    private static @LessThan("#2 + 1") int clamp(@LessThan("#2 + 1") int min, int max, int x) {         //> Decoder::clamp p=(3,1,1/1) r=1/2  --  no way of expressing the lower bound on the result
         if (x <= min) {
             return min;
         } else if (x <= max) {
