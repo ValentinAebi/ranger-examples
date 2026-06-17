@@ -58,3 +58,13 @@ object Lists {
   }
 
 }
+
+extension [T](a: Array[T]) def toList: List[T] = {
+  var ls = List.empty[T]
+  var i = a.length - 1
+  while (i >= 0) {
+    ls = a(i) :: ls
+    i -= 1
+  }
+  ls
+}
