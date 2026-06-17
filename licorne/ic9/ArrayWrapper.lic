@@ -1,16 +1,16 @@
 package arrays;
 
 
-class ArrayWrapper[T] (
-    public size: Length,
+class ArrayWrapper[T] (     //> ArrayWrapper::constructor p=(2,2,2/2) r=none
+    public size: Length,    //> ArrayWrapper::size p=(0,0,0/0) r=(1,1/1)
     wrapped: Array[T] with it.size() == size
 ) : Sized {
 
-    fn set(this, i: Idx(this), elem: T) {
+    fn set(this, i: Idx(this), elem: T) {   //> ArrayWrapper::set p=(2,1,2/2) r=none
         this.wrapped.set(i, elem);
     }
 
-    fn get(this, i: Idx(this)) -> T {
+    fn get(this, i: Idx(this)) -> T {       //> ArrayWrapper::get p=(1,1,2/2) r=(0,0/0)
         return this.wrapped.at(i);
     }
 
@@ -18,7 +18,7 @@ class ArrayWrapper[T] (
 
 object ArrayWrappers {
 
-    fn mkNew[T](size: Length) -> ArrayWrapper[T] {
+    fn mkNew[T](size: Length) -> ArrayWrapper[T] {  //> ArrayWrapper::aux-constructor p=(1,1,1/1) r=(0,0/0)
         val wrapped = new Array(size);
         return new ArrayWrapper(size, wrapped);
     }

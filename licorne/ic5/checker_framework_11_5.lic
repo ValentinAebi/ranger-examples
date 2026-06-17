@@ -4,9 +4,9 @@ import arrays.Array;
 
 typealias ArrOfSameLen[T,U](arr: Array[U]) = Array[T] with it.length() == arr.length()
 
-object Ex_11_5 {
+object IC5 {
 
-    fn lessThan_correct(a1: Array[Int], a2: ArrOfSameLen[Int](a1)) -> Bool {
+    fn lessThan_correct(a1: Array[Int], a2: ArrOfSameLen[Int](a1)) -> Bool {    //> IC5::lessThan_correct p=(2,1,1/1) r=(0,0/0)
         for (var i = 0; i < a1.length(); i += 1) {
             if (a1.at(i) < a2.at(i)) {
                 return true;
@@ -17,7 +17,7 @@ object Ex_11_5 {
         return false;
     }
 
-    fn lessThan_buggy(a1: Array[Int], a2: ArrOfSameLen[Int](a1)) -> Bool {
+    fn lessThan_buggy(a1: Array[Int], a2: ArrOfSameLen[Int](a1)) -> Bool {      //> IC5::lessThan_buggy p=(2,1,1/1) r=(0,0/0) BUG
         for (var i = 0; i < a1.length(); i -= 1) {  // ERROR: should be i += 1
             if (a1.at(i) < a2.at(i)) {
                 return true;

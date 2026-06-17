@@ -2,13 +2,13 @@ import arrays.ArrayWrapper;
 import arrays.Idx;
 
 
-object Test {
+object Client {
 
-    fn clearIndex1[T](a: ArrayWrapper[T?], i: Idx(a)) {
+    fn clearIndex1[T](a: ArrayWrapper[T?], i: Idx(a)) {     //> Client::clearIndex1 p=(2,1,2/2) r=none
         a.set(i, null);
     }
 
-    fn clearIndex2[T](a: ArrayWrapper[T?], i: Int) {
+    fn clearIndex2[T](a: ArrayWrapper[T?], i: Int) {        //> Client::clearIndex2 p=(2,0,0/0) r=none
         if (0 <= i && i < a.size()) {
             a.set(i, null);
         }

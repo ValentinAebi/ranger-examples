@@ -7,7 +7,7 @@ record Nil() : List[Nothing]
 
 object Lists {
 
-    fn map[T, U](ls: List[T], f: fn (T) -> U) -> List[U] {
+    fn map[T, U](ls: List[T], f: fn (T) -> U) -> List[U] {      //> List::map p=(2,0,0/0) r=(0,0/0)
         var resultReversed = new Nil();
         for var rem = ls; rem is Cons; rem = rem.rest() {
             resultReversed = new Cons(first = f(rem.first()), rest = resultReversed);
@@ -15,7 +15,7 @@ object Lists {
         return reverse(resultReversed);
     }
 
-    fn filter[T](ls: List[T], p: pure fn (T) -> Bool) -> List[T with p(it)] {
+    fn filter[T](ls: List[T], p: pure fn (T) -> Bool) -> List[T with p(it)] {   //> List::filter p=(2,0,0/0) r=(1,1/1)
         var filteredReversed = new Nil();
         for var rem = ls; rem is Cons; rem = rem.rest() {
             if p(rem.first()) {
@@ -25,7 +25,7 @@ object Lists {
         return reverse(filteredReversed);
     }
 
-    fn reverse[T](ls: List[T]) -> List[T] {
+    fn reverse[T](ls: List[T]) -> List[T] {         //> List::reverse p=(1,0,0/0) r=(0,0/0)
         var rev = new Nil();
         for var rem = ls; rem is Cons; rem = rem.rest() {
             rev = new Cons(first = rem.first(), rest = rev);

@@ -6,9 +6,9 @@ typealias Minutes = [0..59]
 typealias Seconds = [0..59]
 
 
-record Time(hours: Hours, minutes: Minutes, seconds: Seconds) {
+record Time(hours: Hours, minutes: Minutes, seconds: Seconds) {     //> Time::constructor p=(3,3,6/6) r=none
 
-    fn deltaTime(this, h: Int, min: Int, sec: Int) -> Time {
+    fn deltaTime(this, h: Int, min: Int, sec: Int) -> Time {        //> Time::deltaTime p=(3,0,0/0) r=(0,0/0)
         val sSum = seconds() + sec;
         val seconds = (sSum % 60 + 60) % 60;
         val mSum = minutes() + min + (sSum - seconds) / 60;
@@ -18,22 +18,22 @@ record Time(hours: Hours, minutes: Minutes, seconds: Seconds) {
         return new Time(hours, minutes, seconds);
     }
 
-    fn deltaHours(this, h: Int) -> Time = deltaTime(h, 0, 0)
+    fn deltaHours(this, h: Int) -> Time = deltaTime(h, 0, 0)        //> Time::deltaHours p=(1,0,0/0) r=(0,0/0)
 
-    fn deltaMinutes(this, m: Int) -> Time = deltaTime(0, m, 0)
+    fn deltaMinutes(this, m: Int) -> Time = deltaTime(0, m, 0)      //> Time::deltaMinutes p=(1,0,0/0) r=(0,0/0)
 
-    fn deltaSeconds(this, s: Int) -> Time = deltaTime(0, 0, s)
+    fn deltaSeconds(this, s: Int) -> Time = deltaTime(0, 0, s)      //> Time::deltaSeconds p=(1,0,0/0) r=(0,0/0)
 
 }
 
 
-class MutTime(
+class MutTime(                                              //> MutTime::constructor p=(3,3,6/6) r=none
     var hours: Hours,
     var minutes: Minutes,
     var seconds: Seconds
 ) {
 
-    fn moveBy(this, h: Int, m: Int, s: Int) {
+    fn moveBy(this, h: Int, m: Int, s: Int) {               //> MutTime::moveBy p=(3,0,0/0) r=none
         val sSum = this.seconds + s;
         this.seconds = (sSum % 60 + 60) % 60;
         val mSum = this.minutes + m + (sSum / 60);
@@ -43,15 +43,15 @@ class MutTime(
         this.hours = (hSum % 60 + 60) % 60;
     }
 
-    fn moveByHours(this, h: Int) {
+    fn moveByHours(this, h: Int) {                          //> MutTime::moveByHours p=(1,0,0/0) r=none
         moveBy(h, 0, 0);
     }
 
-    fn moveByMinutes(this, m: Int) {
+    fn moveByMinutes(this, m: Int) {                        //> MutTime::moveByMinutes p=(1,0,0/0) r=none
         moveBy(0, m, 0);
     }
 
-    fn moveBySeconds(this, s: Int) {
+    fn moveBySeconds(this, s: Int) {                        //> MutTime::moveBySeconds p=(1,0,0/0) r=none
         moveBy(0, 0, s);
     }
 

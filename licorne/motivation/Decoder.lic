@@ -10,19 +10,19 @@ typealias Coord(axisSize: NonZeroLength) = [0 ..< axisSize]
 
 object Decoder {
 
-    fn decodeAll(data: Array[Int], xSize: NonZeroLength, ySize: NonZeroLength) -> List[Point[Coord(xSize), Coord(ySize)]] {
+    fn decodeAll(data: Array[Int], xSize: NonZeroLength, ySize: NonZeroLength) -> List[Point[Coord(xSize), Coord(ySize)]] {     //> Decoder::decodeAll p=(3,2,2/2) r=(2,4/4)
         val validData = filter(data.toList(), fn (d) -> d >= 0);
         return map(validData, fn (d) -> decode(d, xSize, ySize));
     }
 
     // expected encoding: 00...0 (16 bits) | x (8 bits) | y (8 bits)
-    private fn decode(datapoint: [0..], xSize: NonZeroLength, ySize: NonZeroLength) -> Point[Coord(xSize), Coord(ySize)] {
+    private fn decode(datapoint: [0..], xSize: NonZeroLength, ySize: NonZeroLength) -> Point[Coord(xSize), Coord(ySize)] {      //> Decoder::decode p=(3,3,3/3) r=(2,4/4)
         val x = clamp(0, xSize - 1, datapoint / 256);
         val y = datapoint % ySize;
         return new Point(x, y);
     }
 
-    private fn clamp(min: Int, max: [min..], x: Int) -> [min..max] =
+    private fn clamp(min: Int, max: [min..], x: Int) -> [min..max] =    //> Decoder::clamp p=(3,1,1/1) r=(1,2/2)
         when x <= min then min
         else when x <= max then x
         else max

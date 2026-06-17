@@ -4,7 +4,7 @@ import arrays.Idx;
 
 object PositiveMax {
 
-    fn maxPos_correct(a: Array[Int]) -> [0..] {
+    fn maxPos_correct(a: Array[Int]) -> [0..] {     //> PositiveMax::maxPos_correct p=(1,0,0/0) r=(1,1/1)
         var k = 0;
         var max = 0;
         while (k < a.length()) {
@@ -17,7 +17,7 @@ object PositiveMax {
         return max;
     }
 
-    fn maxPos_buggy(a: Array[Int]) -> [0..] {
+    fn maxPos_buggy(a: Array[Int]) -> [0..] {       //> PositiveMax::maxPos_buggy p=(1,0,0/0) r=(1,1/1) BUG
         var k = 0;
         var max = 0;
         // ERROR: should be <
@@ -31,7 +31,7 @@ object PositiveMax {
         return max;
     }
 
-    fn maxPos_moreComplex_correct(a: Array[Int], start: Idx(a), incEven: [1..], incOdd: [1..]) -> [0..] {
+    fn maxPos_moreComplex_correct(a: Array[Int], start: Idx(a), incEven: [1..], incOdd: [1..]) -> [0..] {   //> PositiveMax::maxPos_moreComplex_correct p=(4,3,4/4) r=(1,1/1)
         var k = start;
         var max = 0;
         while (k < a.length()) {
@@ -48,7 +48,7 @@ object PositiveMax {
         return max;
     }
 
-    fn maxPos_moreComplex_buggy(a: Array[Int], start: Idx(a), incEven: [1..], incOdd: Int) -> [0..] {
+    fn maxPos_moreComplex_buggy(a: Array[Int], start: Idx(a), incEven: [1..], incOdd: Int) -> [0..] {   //> PositiveMax::maxPos_moreComplex_buggy p=(4,3,4/4) r=(1,1/1) BUG
         var k = start;
         var max = 0;
         while (k < a.length()) {

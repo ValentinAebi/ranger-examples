@@ -1,0 +1,26 @@
+package org.example.lj2;
+
+import org.checkerframework.checker.index.qual.NonNegative;
+
+
+public class Sum {
+
+    public static @NonNegative int sum_original(int n) {        //> Sum::sum_original p=(1,0,0/0) r=(1,1/2)  --  the Index Checker cannot express @GreaterOrEq("n")
+        if (n <= 1)
+            return 0;
+        else {
+            int t1 = sum_original(n - 1);
+            return n + t1;
+        }
+    }
+
+    public static @NonNegative int sum_fixed(int n) {           //> Sum::sum_fixed p=(1,0,0/0) r=(1,1/2)  --  the Index Checker cannot express @GreaterOrEq("n")
+        if (n <= 1)
+            return 0;
+        else {
+            int t1 = sum_fixed(n - 1);
+            return n + t1;
+        }
+    }
+
+}

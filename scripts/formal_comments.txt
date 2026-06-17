@@ -1,0 +1,4 @@
+
+Next to the function or constructor:
+//> ConceptualClass::conceptualMethod p=(#annot,#refinements,#expressed/#desired) ret=none|(#refinements,#expressed/#desired) [bypass=#assumptions] [REPORTED] [BUG]
+where #expressed and #desired refer to the number of annotations that we can express vs those that we would like to express, respectively

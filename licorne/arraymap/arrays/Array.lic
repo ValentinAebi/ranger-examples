@@ -15,7 +15,7 @@ class Array[T](public size: Length) : OrderedCollection[T] {
         panic "compile to bytecode xASTORE"
     }
 
-    fn indexOf(this, t: T) -> Idx(this)? {
+    fn indexOf(this, t: T) -> Idx(this)? {                      //> Array::indexOf p=(1,0,0/0) r=(1,2/2)
         for (var i = 0; i < size(); i += 1) {
             if (get(i) == t) {
                 return i;

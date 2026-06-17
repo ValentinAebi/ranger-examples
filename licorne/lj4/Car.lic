@@ -1,22 +1,22 @@
 
 typealias CarAcceptableYears = [1801 ..< 2050]
 
-class Car(
+class Car(                          //> Car::constructor p=(2,2,3/3) r=none
     var year: CarAcceptableYears,
     var seats: [0..]
 ) {
 
-    fn setYear(this, year: CarAcceptableYears) {
+    fn setYear(this, year: CarAcceptableYears) {    //> Car::setYear p=(1,1,2/2) r=none
         this.year = year;
     }
 
-    fn getYear(this) -> CarAcceptableYears = year
+    fn getYear(this) -> CarAcceptableYears = year   //> Car::getYear p=(0,0,0/0) r=(1,2/2)
 
 }
 
 object Cars {
 
-    fn newCarWithDefaultValues() -> Car {
+    fn newCarWithDefaultValues() -> Car {           // excluded from the comparison since it has no counterpart in the Java implementation
         return new Car(year = 2026, seats = 5);
     }
 

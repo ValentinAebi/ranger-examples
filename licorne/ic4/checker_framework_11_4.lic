@@ -6,21 +6,21 @@ typealias ArrayOfMinLen[T](l: [0..]) = Array[T] with it.length() >= l
 
 typealias ArrayOfLen[T](l: [0..]) = Array[T] with it.length() == l
 
-object Ex_11_4 {
+object IC4 {
 
-    fn getThirdElem_1_correct(arr: ArrayOfMinLen[String](3)) -> String {
+    fn getThirdElement_1_correct(arr: ArrayOfMinLen[String](3)) -> String {    //> IC4::getThirdElement_1_correct p=(1,1,1/1) r=(0,0/0)
         return arr.at(2);
     }
 
-    fn getThirdElem_1_buggy(arr: ArrayOfMinLen[String](3)) -> String {
+    fn getThirdElement_1_buggy(arr: ArrayOfMinLen[String](3)) -> String {      //> IC4::getThirdElement_1_buggy p=(1,1,1/1) r=(0,0/0) BUG
         return arr.at(3);
     }
 
-    fn getThirdElem_2_correct(arr: ArrayOfLen[String](3)) -> String {
+    fn getThirdElement_2_correct(arr: ArrayOfLen[String](3)) -> String {       //> IC4::getThirdElement_2_correct p=(1,1,1/1) r=(0,0/0)
         return arr.at(2);
     }
 
-    fn getThirdElem_2_buggy(arr: ArrayOfLen[String](3)) -> String {
+    fn getThirdElement_2_buggy(arr: ArrayOfLen[String](3)) -> String {         //> IC4::getThirdElement_2_buggy p=(1,1,1/1) r=(0,0/0)
         return arr.at(3);
     }
 

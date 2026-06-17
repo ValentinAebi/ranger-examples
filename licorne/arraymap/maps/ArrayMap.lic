@@ -6,19 +6,19 @@ import collections.arrays.ArrayOfSameLength;
 
 
 // A (fixed-capacity) implementation of an ArrayMap
-class ArrayMap[K sub Any, V sub Any](
+class ArrayMap[K sub Any, V sub Any](           //> ArrayMap::constructor p=(3,2,3/3) r=none
     keys: Array[K?],
     values: ArrayOfSameLength[V?](keys),
     var currSize: [0 .. capacity()]
 ) : Map[K, V] {
 
-    pure fn capacity(this) -> Length =
+    pure fn capacity(this) -> Length =          //> ArrayMap::capacity p=(0,0,0/0) r=(1,1/1)
         this.keys.size()
 
-    fn currentSize(this) -> [0 .. capacity()] =
+    fn currentSize(this) -> [0 .. capacity()] =     //> ArrayMap::currentSize p=(0,0,0/0) r=(1,2/2)
         this.currSize
 
-    fn get(this, k: K) -> V? {
+    fn get(this, k: K) -> V? {                  //> ArrayMap::get p=(1,0,0/0) r=(0,0/0)
         val idx = this.keys.indexOf(k);
         if (idx == null) {
             return null;
@@ -27,7 +27,7 @@ class ArrayMap[K sub Any, V sub Any](
         }
     }
 
-    fn put(this, k: K, v: V) -> Bool {
+    fn put(this, k: K, v: V) -> Bool {          //> ArrayMap::put p=(2,0,0/0) r=(0,0/0)
         val preSize = currentSize();
         val canAdd = preSize < capacity();
         if canAdd {
@@ -45,7 +45,7 @@ class ArrayMap[K sub Any, V sub Any](
         return canAdd;
     }
 
-    fn remove(this, k: K) -> Bool {
+    fn remove(this, k: K) -> Bool {         //> ArrayMap::remove p=(1,0,0/0) r=(0,0/0)
         val preSize = currentSize();
         if (preSize > 0) {
             val idx = this.keys.indexOf(k);
@@ -64,7 +64,7 @@ class ArrayMap[K sub Any, V sub Any](
 
 object ArrayMaps {
 
-    fn newEmptyOfCapacity[K sub Any, V sub Any](capacity: Length) -> ArrayMap[K, V] =
+    fn newEmptyOfCapacity[K sub Any, V sub Any](capacity: Length) -> ArrayMap[K, V] =   //> ArrayMap::aux-constructor p=(1,1,1/1) r=(0,0/0)
         new ArrayMap(keys = new Array(size = capacity), values = new Array(size = capacity), currSize = 0);
 
 }
