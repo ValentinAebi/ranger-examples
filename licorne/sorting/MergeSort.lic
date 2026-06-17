@@ -33,7 +33,7 @@ object MergeSort {
     }
 
     private fn merge[T](array: Array[T], tmpArray: ArrayOfLen[T](array.length()),
-                        lt: fn (T,T) -> Bool, left: Idx(array), mid: Idx(array), right: Idx(array) & [left..]) {  //> MergeSort::merge p=(6,5,13/13) r=none  --  13 constraints here: all of left, mid, and right, need to be valid indices for array and tmpArray: 3 indices x 2 arrays x 2 bounds = 12, plus the constrains left <= right
+                        lt: fn (T,T) -> Bool, left: Idx(array), mid: Idx(array), right: Idx(array) & [left..]) {  //> MergeSort::merge p=(6,5,13/13) r=none BUG  --  13 constraints here: all of left, mid, and right, need to be valid indices for array and tmpArray: 3 indices x 2 arrays x 2 bounds = 12, plus the constrains left <= right
         var i = left;
         var j = mid + 1;
         arrayCopy(array, left, tmpArray, left, right + 1 - left);

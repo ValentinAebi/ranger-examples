@@ -48,7 +48,7 @@ object PositiveMax {
         return max;
     }
 
-    fn maxPos_moreComplex_buggy(a: Array[Int], start: Idx(a), incEven: [1..], incOdd: Int) -> [0..] {   //> PositiveMax::maxPos_moreComplex_buggy p=(4,3,4/4) r=(1,1/1) BUG
+    fn maxPos_moreComplex_buggy(a: Array[Int], start: Idx(a), incEven: [1..], incOdd: Int) -> [0..] {   //> PositiveMax::maxPos_moreComplex_buggy p=(4,3,3/3) r=(1,1/1) BUG
         var k = start;
         var max = 0;
         while (k < a.length()) {

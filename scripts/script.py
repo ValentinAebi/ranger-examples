@@ -1,6 +1,7 @@
 import os
 import re
-from typing import List, Dict
+import sys
+from typing import Dict
 
 
 class Entry:
@@ -11,7 +12,6 @@ class Entry:
     param_refinements_cnt: int
     param_constraints_expressed_cnt: int
     param_constraints_desired_cnt: int
-    has_return_type: bool
     return_type_refinements_cnt: int
     return_type_constraints_expressed_cnt: int
     return_type_constraints_desired_cnt: int
@@ -46,7 +46,8 @@ def load_entries(dir: str, is_java: bool) -> Dict[str, Entry]:
                         sp = sp[1].split(' ')[1:]
                         sp = list(filter(lambda x: len(x) > 0, sp))
                         entry = Entry()
-                        entry.example_name = (os.path.normpath(subdir_path).split(os.sep)[-1] if is_java else top_level_subdir).lower()
+                        entry.example_name = (
+                            os.path.normpath(subdir_path).split(os.sep)[-1] if is_java else top_level_subdir).lower()
                         (entry.module, entry.function) = [s.lower() for s in sp[0].split("::")]
                         sp = sp[1:]
                         m = re.search(r"p=\((\d*),(\d*),(\d*)/(\d*)\)", sp[0])
@@ -57,9 +58,10 @@ def load_entries(dir: str, is_java: bool) -> Dict[str, Entry]:
                         sp = sp[1:]
                         assert sp[0].startswith("r="), raw_line
                         if sp[0][2:] == "none":
-                            entry.has_return_type = False
+                            entry.return_type_refinements_cnt = 0
+                            entry.return_type_constraints_expressed_cnt = 0
+                            entry.return_type_constraints_desired_cnt = 0
                         else:
-                            entry.has_return_type = True
                             m = re.search(r"r=\((\d*),(\d*)/(\d*)\)", sp[0])
                             entry.return_type_refinements_cnt = int(m.group(1))
                             entry.return_type_constraints_expressed_cnt = int(m.group(2))
@@ -81,18 +83,39 @@ def load_entries(dir: str, is_java: bool) -> Dict[str, Entry]:
     return entries
 
 
+def compare(data1: dict[str, Entry], data2: dict[str, Entry]):
+    all_ids = dict()
+    all_ids.update(data1)
+    all_ids.update(data2)
+    diff_cnt = 0
+    for uid, _ in all_ids.items():
+        if not uid in data1:
+            print("missing in licorne data: ", uid)
+            continue
+        if not uid in data2:
+            print("missing in checker framework data: ", uid)
+            continue
+        entry1 = data1[uid]
+        entry2 = data2[uid]
+        if entry1.param_cnt != entry2.param_cnt:
+            print("difference in parameter count: ", uid, file=sys.stderr)
+            diff_cnt += 1
+        if entry1.param_constraints_desired_cnt != entry2.param_constraints_desired_cnt:
+            print("difference in desired parameter constraints: ", uid, file=sys.stderr)
+            diff_cnt += 1
+        if entry1.return_type_constraints_desired_cnt != entry2.return_type_constraints_desired_cnt:
+            print("difference in desired return constraints: ", uid, file=sys.stderr)
+            diff_cnt += 1
+        if entry1.has_bug != entry2.has_bug:
+            print("difference in bug status: ", uid, file=sys.stderr)
+            diff_cnt += 1
+    print(f"{diff_cnt} differences", file=sys.stderr)
+
+
 def main():
     licorne_data = load_entries("../licorne", is_java=False)
     checker_framework_data = load_entries("../java-checker-framework", is_java=True)
-    all_ids = dict()
-    all_ids.update(licorne_data)
-    all_ids.update(checker_framework_data)
-    for uid, _ in all_ids.items():
-        if not uid in licorne_data:
-            print("missing in licorne data: ", uid)
-        if not uid in checker_framework_data:
-            print("missing in checker framework data: ", uid)
-
+    compare(checker_framework_data, licorne_data)
 
 
 if __name__ == "__main__":

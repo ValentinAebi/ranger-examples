@@ -19,7 +19,7 @@ public class PositiveMax {
         return max;
     }
 
-    public static @NonNegative int maxPos_buggy(int[] a) {          //> PositiveMax::maxPos_buggy p=(1,0,0/0) r=(1,1/2) BUG
+    public static @NonNegative int maxPos_buggy(int[] a) {          //> PositiveMax::maxPos_buggy p=(1,0,0/0) r=(1,1/1) BUG
         var k = 0;
         var max = 0;
         // ERROR: should be <

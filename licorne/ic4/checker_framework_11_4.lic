@@ -20,7 +20,7 @@ object IC4 {
         return arr.at(2);
     }
 
-    fn getThirdElement_2_buggy(arr: ArrayOfLen[String](3)) -> String {         //> IC4::getThirdElement_2_buggy p=(1,1,1/1) r=(0,0/0)
+    fn getThirdElement_2_buggy(arr: ArrayOfLen[String](3)) -> String {         //> IC4::getThirdElement_2_buggy p=(1,1,1/1) r=(0,0/0) BUG
         return arr.at(3);
     }
 

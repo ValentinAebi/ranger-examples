@@ -15,7 +15,7 @@ public class ArrayWrapper<T> {                              //> ArrayWrapper::co
         delegate = new Object[size];
     }
 
-    public @LengthOf("this") int size() {                   //> ArrayWrapper::size p=(0,0,0/0) r=(1,0/0)  --  the refinement here does not express a constraint, it merely informs the Checker Framework that this method should be treated as the size of this collection
+    public @LengthOf("this") @NonNegative int size() {     //> ArrayWrapper::size p=(0,0,0/0) r=(2,1/1)  --  @LengthOf("this") does not express a constraint, it merely informs the Checker Framework that this method should be treated as the size of this collection
         return delegate.length;
     }
 
