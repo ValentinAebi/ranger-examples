@@ -17,7 +17,7 @@ object IC5 {
         return false;
     }
 
-    fn lessThan_buggy(a1: Array[Int], a2: ArrOfSameLen[Int](a1)) -> Bool {      //> IC5::lessThan_buggy p=(2,1,1/1) r=(0,0/0) BUG
+    fn lessThan_buggy(a1: Array[Int], a2: ArrOfSameLen[Int](a1)) -> Bool {      //> IC5::lessThan_buggy p=(2,1,1/1) r=(0,0/0) BUG REPORTED
         for (var i = 0; i < a1.length(); i -= 1) {  // ERROR: should be i += 1
             if (a1.at(i) < a2.at(i)) {
                 return true;

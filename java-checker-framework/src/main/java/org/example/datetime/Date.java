@@ -14,7 +14,7 @@ record Date(int year, @IntRange(from = 1, to = 12) int month, @IntRange(from = 1
         }
     }
 
-    public Date previousDay() {                                                 //> Date::previousDay p=(0,0,0/0) r=(0,0/0) BUG
+    public Date previousDay() {                                                 //> Date::previousDay p=(0,0,0/0) r=(0,0/0) BUG REPORTED
         if (this.day() > 1) {
             return new Date(this.year(), this.month(), this.day() - 1);
         } else if (this.month() > 1) {

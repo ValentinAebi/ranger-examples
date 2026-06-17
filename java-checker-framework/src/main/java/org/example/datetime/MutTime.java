@@ -17,7 +17,7 @@ public class MutTime {                                  //> MutTime::constructor
         this.seconds = seconds;
     }
 
-    public void moveBy(int h, int m, int s) {           //> MutTime::moveBy p=(3,0,0/0) r=none
+    public void moveBy(int h, int m, int s) {           //> MutTime::moveBy p=(3,0,0/0) r=none BUG REPORTED
         var sSum = this.seconds + s;
         this.seconds = (sSum % 60 + 60) % 60;
         var mSum = this.minutes + m + (sSum / 60);

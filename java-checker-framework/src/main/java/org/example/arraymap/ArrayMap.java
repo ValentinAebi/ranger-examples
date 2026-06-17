@@ -34,7 +34,7 @@ public class ArrayMap<K, V> {       //> ArrayMap::constructor p=(3,2,3/3) r=none
         }
     }
 
-    public boolean put(K k, V v) {                  //> ArrayMap::put p=(2,0,0/0) r=(0,0/0)
+    public boolean put(K k, V v) {                  //> ArrayMap::put p=(2,0,0/0) r=(0,0/0) BUG REPORTED
         if (k == null || v == null) {
             throw new IllegalArgumentException();
         }

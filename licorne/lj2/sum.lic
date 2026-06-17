@@ -3,9 +3,9 @@ typealias Nat = [0..]
 
 object Sum {
 
-    fn sum_original(n: Int) -> Nat & [n..] {    //> Sum::sum_original p=(1,0,0/0) r=(2,2/2)
+    fn sum_original(n: Int) -> Nat & [n..] {    //> Sum::sum_original p=(1,0,0/0) r=(2,2/2) BUG REPORTED
         if (n <= 1) {
-            return 0;
+            return 0;   // ERROR: violates [n..]
         } else {
             val t1 = sum_original(n-1);
             return n + t1;

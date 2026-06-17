@@ -6,7 +6,7 @@ import org.checkerframework.checker.index.qual.LessThan;
 
 public class FilterLessThan {
 
-    static List<@LessThan("#1") Integer> filterLessThan_adHoc_correct(int a, List<Integer> ls) {        //> FilterLessThan::filterLessThan_adHoc_correct p=(2,0,0/0) r=(1,1/1)
+    static List<@LessThan("#1") Integer> filterLessThan_adHoc_correct(int a, List<Integer> ls) {        //> FilterLessThan::filterLessThan_adHoc_correct p=(2,0,0/0) r=(1,1/1) REPORTED
         List<@LessThan("a") Integer> revFiltered = new Nil<>();
         var rem = ls;
         while (rem instanceof Cons<Integer> cons) {
@@ -19,7 +19,7 @@ public class FilterLessThan {
         return reverse(revFiltered);
     }
 
-    static List<@LessThan("#1") Integer> filterLessThan_adHoc_buggy(int a, List<Integer> ls) {          //> FilterLessThan::filterLessThan_adHoc_buggy p=(2,0,0/0) r=(1,1/1) BUG
+    static List<@LessThan("#1") Integer> filterLessThan_adHoc_buggy(int a, List<Integer> ls) {          //> FilterLessThan::filterLessThan_adHoc_buggy p=(2,0,0/0) r=(1,1/1) BUG REPORTED
         List<@LessThan("a") Integer> revFiltered = new Nil<>();
         var rem = ls;
         while (rem instanceof Cons<Integer> cons) {

@@ -19,7 +19,7 @@ public class PositiveMax {
         return max;
     }
 
-    public static @NonNegative int maxPos_buggy(int[] a) {          //> PositiveMax::maxPos_buggy p=(1,0,0/0) r=(1,1/1) BUG
+    public static @NonNegative int maxPos_buggy(int[] a) {          //> PositiveMax::maxPos_buggy p=(1,0,0/0) r=(1,1/1) BUG REPORTED
         var k = 0;
         var max = 0;
         // ERROR: should be <
@@ -50,7 +50,7 @@ public class PositiveMax {
         return max;
     }
 
-    public static @NonNegative int maxPos_moreComplex_buggy(int[] a, @IndexFor("#1") int start, @Positive int incEven, int incOdd) {            //> PositiveMax::maxPos_moreComplex_buggy p=(4,2,3/3) r=(1,1/1) BUG
+    public static @NonNegative int maxPos_moreComplex_buggy(int[] a, @IndexFor("#1") int start, @Positive int incEven, int incOdd) {            //> PositiveMax::maxPos_moreComplex_buggy p=(4,2,3/3) r=(1,1/1) BUG REPORTED
         var k = 0;
         var max = start;
         while (k < a.length) {

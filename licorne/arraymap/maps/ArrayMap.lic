@@ -27,7 +27,7 @@ class ArrayMap[K sub Any, V sub Any](           //> ArrayMap::constructor p=(3,2
         }
     }
 
-    fn put(this, k: K, v: V) -> Bool {          //> ArrayMap::put p=(2,0,0/0) r=(0,0/0)
+    fn put(this, k: K, v: V) -> Bool {          //> ArrayMap::put p=(2,0,0/0) r=(0,0/0) BUG REPORTED
         val preSize = currentSize();
         val canAdd = preSize < capacity();
         if canAdd {

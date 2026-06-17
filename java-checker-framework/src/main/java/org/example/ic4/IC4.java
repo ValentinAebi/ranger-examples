@@ -9,7 +9,7 @@ public class IC4 {
         return arr[2];
     }
 
-    String getThirdElement_1_buggy(String @MinLen(3) [] arr) {      //> IC4::getThirdElement_1_buggy p=(1,1,1/1) r=(0,0/0) BUG
+    String getThirdElement_1_buggy(String @MinLen(3) [] arr) {      //> IC4::getThirdElement_1_buggy p=(1,1,1/1) r=(0,0/0) BUG REPORTED
         return arr[3];
     }
 
@@ -17,7 +17,7 @@ public class IC4 {
         return arr[2];
     }
 
-    String getThirdElement_2_buggy(String @ArrayLen(3) [] arr) {    //> IC4::getThirdElement_2_buggy p=(1,1,1/1) r=(0,0/0) BUG
+    String getThirdElement_2_buggy(String @ArrayLen(3) [] arr) {    //> IC4::getThirdElement_2_buggy p=(1,1,1/1) r=(0,0/0) BUG REPORTED
         return arr[3];
     }
 

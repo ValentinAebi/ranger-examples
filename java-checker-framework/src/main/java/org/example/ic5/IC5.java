@@ -15,7 +15,7 @@ public class IC5 {
         return false;
     }
 
-    boolean lessThan_buggy(double[] arr1, double @SameLen("#1") [] arr2) {          //> IC5::lessThan_buggy p=(2,1,1/1) r=(0,0/0) BUG
+    boolean lessThan_buggy(double[] arr1, double @SameLen("#1") [] arr2) {          //> IC5::lessThan_buggy p=(2,1,1/1) r=(0,0/0) BUG REPORTED
         for (int i = 0; i < arr1.length; i--) {     // ERROR: should be i++
             if (arr1[i] < arr2[i]) {
                 return true;

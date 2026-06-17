@@ -33,7 +33,7 @@ class MutTime(                                              //> MutTime::constru
     var seconds: Seconds
 ) {
 
-    fn moveBy(this, h: Int, m: Int, s: Int) {               //> MutTime::moveBy p=(3,0,0/0) r=none
+    fn moveBy(this, h: Int, m: Int, s: Int) {               //> MutTime::moveBy p=(3,0,0/0) r=none BUG REPORTED
         val sSum = this.seconds + s;
         this.seconds = (sSum % 60 + 60) % 60;
         val mSum = this.minutes + m + (sSum / 60);

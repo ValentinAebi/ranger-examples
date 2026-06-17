@@ -18,7 +18,7 @@ object FilterLessThan {
         return reverse(filteredReversed);
     }
 
-    fn filterLessThan_adHoc_buggy(a: Int, var ls: List[Int]) -> List[[..<a]] {          //> FilterLessThan::filterLessThan_adHoc_buggy p=(2,0,0/0) r=(1,1/1) BUG
+    fn filterLessThan_adHoc_buggy(a: Int, var ls: List[Int]) -> List[[..<a]] {          //> FilterLessThan::filterLessThan_adHoc_buggy p=(2,0,0/0) r=(1,1/1) BUG REPORTED
         var filteredReversed = new Nil();
         while ls is Cons {
             if ls.first() <= a {  // ERROR: should be <
@@ -32,7 +32,7 @@ object FilterLessThan {
     fn filterLessThan_functional_correct(a: Int, ls: List[Int]) -> List[[..<a]] =       //> FilterLessThan::filterLessThan_functional_correct p=(2,0,0/0) r=(1,1/1)
         filter(ls, fn (elem) -> elem < a)
 
-    fn filterLessThan_functional_buggy(a: Int, ls: List[Int]) -> List[[..<a]] =         //> FilterLessThan::filterLessThan_functional_buggy p=(2,0,0/0) r=(1,1/1) BUG
+    fn filterLessThan_functional_buggy(a: Int, ls: List[Int]) -> List[[..<a]] =         //> FilterLessThan::filterLessThan_functional_buggy p=(2,0,0/0) r=(1,1/1) BUG REPORTED
         filter(ls, fn (elem) -> elem <= a)  // ERROR: should be elem < a
 
 }

@@ -22,7 +22,7 @@ public class Test {
         int k = getYear();
     }
 
-    public static void test_buggy() {       //> Test::test_buggy p=(0,0,0/0) r=none BUG
+    public static void test_buggy() {       //> Test::test_buggy p=(0,0,0/0) r=none BUG REPORTED
         int a = 998;
         Car c = new Car();
         c.setYear(a);               // ERROR: bad value

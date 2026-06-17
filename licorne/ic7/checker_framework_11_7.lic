@@ -28,7 +28,7 @@ object IC7 {
         return original;
     }
 
-    fn removeSubstring_buggy(original: String, removed: String with length(it) <= length(original)) -> String {         //> IC7::removeSubstring_buggy p=(2,1,1/1) r=(0,0/0) BUG
+    fn removeSubstring_buggy(original: String, removed: String with length(it) <= length(original)) -> String {         //> IC7::removeSubstring_buggy p=(2,1,1/1) r=(0,0/0) BUG REPORTED
         val i = indexOf(original, removed);
         // ERROR: missing check for i == -1
         return concat(

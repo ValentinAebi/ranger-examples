@@ -34,7 +34,7 @@ public class MergeSort {
         }
     }
 
-    private static <T extends Comparable<T>> void merge(T[] arr, T[] aux, BiFunction<T, T, Boolean> lessThan, @IndexFor({"#1", "#2"}) @LessThan("#6 + 1") int left,                     //> MergeSort::merge p=(6,4,13/13) r=none BUG
+    private static <T extends Comparable<T>> void merge(T[] arr, T[] aux, BiFunction<T, T, Boolean> lessThan, @IndexFor({"#1", "#2"}) @LessThan("#6 + 1") int left,                     //> MergeSort::merge p=(6,4,13/13) r=none BUG REPORTED
                                                         @IndexFor({"#1", "#2"}) int mid, @IndexFor({"#1", "#2"}) int right) {
         @IndexOrHigh("aux") int i = left, j = mid + 1;
         
