@@ -7,7 +7,7 @@ import liquidjava.specification.RefinementAlias;
 public class Sum {
 
     @Refinement("Nat(_) && _ >= n")
-    public static int sum_original(int n) {
+    public static int sum_original(int n) {     //> Sum::sum_original p=(1,0,0/0) r=(1,2/2) BUG REPORTED
         if (n <= 1)
             return 0;
         else {
@@ -17,7 +17,7 @@ public class Sum {
     }
 
     @Refinement("Nat(_) && _ >= n")
-    public static int sum_fixed(int n) {
+    public static int sum_fixed(int n) {        //> Sum::sum_fixed p=(1,0,0/0) r=(1,2/2)
         if (n < 0) {
             return 0;
         } else if (n <= 1)

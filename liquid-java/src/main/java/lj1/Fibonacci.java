@@ -8,7 +8,7 @@ import liquidjava.specification.RefinementAlias;
 public class Fibonacci {
 
     @Refinement( "_ >= 0 && GreaterEqualThan(_, n)")
-    public static int fib_original(@Refinement("Nat(n)") int n){
+    public static int fib_original(@Refinement("Nat(n)") int n){        //> Fibonacci::fib_original p=(1,1,1/1) r=(1,2/2) BUG REPORTED
         if(n <= 1)
             return 0;
         else
@@ -16,7 +16,7 @@ public class Fibonacci {
     }
 
     @Refinement( "_ >= 0 && GreaterEqualThan(_, n)")
-    public static int fib_base_case_fixed(@Refinement("Nat(n)") int n){
+    public static int fib_base_case_fixed(@Refinement("Nat(n)") int n){     //> Fibonacci::fib_base_case_fixed p=(1,1,1/1) r=(1,2/2) BUG
         if(n <= 1)
             return n;
         else

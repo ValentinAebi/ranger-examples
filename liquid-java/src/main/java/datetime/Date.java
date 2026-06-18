@@ -4,9 +4,9 @@ import liquidjava.specification.Refinement;
 import liquidjava.specification.RefinementAlias;
 
 
-record Date(int year, @Refinement("1 <= _ && _ <= 12") int month, @Refinement("1 <= _ && _ <= 31") int day) {
+record Date(int year, @Refinement("1 <= _ && _ <= 12") int month, @Refinement("1 <= _ && _ <= nDaysInMonth(year, month)") int day) {   //> Date::constructor p=(3,2,4/4) r=none
 
-    public Date nextDay() {
+    public Date nextDay() {     //> Date::nextDay p=(0,0,0/0) r=(0,0/0)
         if (this.day() < nDaysInMonth(this.year(), this.month())) {
             return new Date(this.year(), this.month(), this.day() + 1);
         } else if (this.month() < 12) {
@@ -16,7 +16,7 @@ record Date(int year, @Refinement("1 <= _ && _ <= 12") int month, @Refinement("1
         }
     }
 
-    public Date previousDay() {
+    public Date previousDay() {     //> Date::previousDay p=(0,0,0/0) r=(0,0/0) BUG
         if (this.day() > 1) {
             return new Date(this.year(), this.month(), this.day() - 1);
         } else if (this.month() > 1) {
@@ -27,7 +27,7 @@ record Date(int year, @Refinement("1 <= _ && _ <= 12") int month, @Refinement("1
         }
     }
 
-    public static @Refinement("28 <= _ && _ <= 31") int nDaysInMonth(int year, int month) {
+    public static @Refinement("28 <= _ && _ <= 31") int nDaysInMonth(int year, @Refinement("1 <= _ && _ <= 31") int month) {     //> Date::nDaysInMonth p=(2,1,2/2) r=(1,2/2)
         if (month == 2) {
             // slightly simplified...
             return year % 4 != 0 ? 28

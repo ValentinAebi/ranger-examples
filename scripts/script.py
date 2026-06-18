@@ -9,19 +9,20 @@ class Entry:
     example_name: str
     module: str
     function: str
-    param_cnt: int
-    param_refinements_cnt: int
-    param_constraints_expressed_cnt: int
-    param_constraints_desired_cnt: int
-    return_type_refinements_cnt: int
-    return_type_constraints_expressed_cnt: int
-    return_type_constraints_desired_cnt: int
-    has_bug: bool
-    reported: bool
-    auxiliary_annot_cnt: int
-    auxiliary_refinements_cnt: int
-    auxiliary_constraints_cnt: int
-    bypass_cnt: int
+    param_cnt: int = 0
+    param_refinements_cnt: int = 0
+    param_constraints_expressed_cnt: int = 0
+    param_constraints_desired_cnt: int = 0
+    return_type_refinements_cnt: int = 0
+    return_type_constraints_expressed_cnt: int = 0
+    return_type_constraints_desired_cnt: int = 0
+    has_bug: bool = False
+    reported: bool = False
+    tool_failure: bool = False
+    auxiliary_annot_cnt: int = 0
+    auxiliary_refinements_cnt: int = 0
+    auxiliary_constraints_cnt: int = 0
+    bypass_cnt: int = 0
 
     def uid(self):
         return f"{self.example_name}::{self.module}::{self.function}"
@@ -63,11 +64,7 @@ def load_entries(dir: str, is_java: bool) -> Dict[str, Entry]:
                         entry.param_constraints_desired_cnt = int(m.group(4))
                         sp = sp[1:]
                         assert sp[0].startswith("r="), raw_line
-                        if sp[0][2:] == "none":
-                            entry.return_type_refinements_cnt = 0
-                            entry.return_type_constraints_expressed_cnt = 0
-                            entry.return_type_constraints_desired_cnt = 0
-                        else:
+                        if sp[0][2:] != "none":
                             m = re.search(r"r=\((\d*),(\d*)/(\d*)\)", sp[0])
                             entry.return_type_refinements_cnt = int(m.group(1))
                             entry.return_type_constraints_expressed_cnt = int(m.group(2))
@@ -75,20 +72,14 @@ def load_entries(dir: str, is_java: bool) -> Dict[str, Entry]:
                         sp = sp[1:]
                         aux_annot_tags = [t for t in sp if t.startswith("aux-annot")]
                         assert len(aux_annot_tags) <= 1
-                        if len(aux_annot_tags) == 0:
-                            entry.auxiliary_annot_cnt = 0
-                            entry.auxiliary_refinements_cnt = 0
-                            entry.auxiliary_constraints_cnt = 0
-                        else:
+                        if len(aux_annot_tags) > 0:
                             m = re.search(r"aux-annot=\((\d*),(\d*),(\d*)\)", aux_annot_tags[0])
                             entry.auxiliary_annot_cnt = int(m.group(1))
                             entry.auxiliary_refinements_cnt = int(m.group(2))
                             entry.auxiliary_constraints_cnt = int(m.group(3))
                         bypass_tags = [t for t in sp if t.startswith("bypass")]
-                        assert len(bypass_tags) <= 1
-                        if len(bypass_tags) == 0:
-                            entry.bypass_cnt = 0
-                        else:
+                        assert len(bypass_tags) <= 1, "too many bypass tags"
+                        if len(bypass_tags) > 0:
                             m = re.search(r"bypass=(\d*)", bypass_tags[0])
                             entry.bypass_cnt = int(m.group(1))
                         sp = [t for t in sp if not t.startswith("aux-annot") and not t.startswith("bypass")]
@@ -98,25 +89,32 @@ def load_entries(dir: str, is_java: bool) -> Dict[str, Entry]:
                         entry.reported = "reported" in sp
                         if entry.reported:
                             sp.remove("reported")
-                        assert len(sp) == 0, f"unknown marker(s): {sp} (complete line is {raw_line})"
-                        assert entry.uid() not in entries
+                        entry.tool_failure = "fail" in sp
+                        if entry.tool_failure:
+                            sp.remove("fail")
+                        assert len(sp) == 0, f"unknown marker(s): {sp}"
+                        assert entry.uid() not in entries, "duplicate uid"
                         entries[entry.uid()] = entry
                     except Exception as e:
-                        raise Exception(e.args[0] + f" (complete line is {raw_line})")
+                        if len(e.args) > 0:
+                            raise Exception(e.args[0] + f" (complete line is {raw_line})")
+                        else:
+                            raise e
     return entries
 
 
-def compare(data1: dict[str, Entry], data2: dict[str, Entry]):
+def compare(data1: dict[str, Entry], code1: str, data2: dict[str, Entry], code2: str):
+    print(f"comparing {code1} and {code2}:", file=sys.stderr)
     all_ids = dict()
     all_ids.update(data1)
     all_ids.update(data2)
     diff_cnt = 0
     for uid, _ in all_ids.items():
         if not uid in data1:
-            print("missing in licorne data: ", uid)
+            print(f"missing in {code1} data: ", uid)
             continue
         if not uid in data2:
-            print("missing in checker framework data: ", uid)
+            print(f"missing in {code2} data: ", uid)
             continue
         entry1 = data1[uid]
         entry2 = data2[uid]
@@ -172,7 +170,7 @@ def create_examples_table(data: List[Tuple[str, Dict[str, Entry]]]) -> List[List
     general_headers = ["prog", "#p", "#p-cstr", "#r-cstr"]
     per_lang_headers = ["#p-ref", "#p-cstr", "#r-ref",
                         "#r-cstr", "TN", "FN", "FP", "TP", "#aux-an", "#aux-ref",
-                        "#aux-cstr", "#bypass"]
+                        "#aux-cstr", "#bypass", "failed"]
 
     def mk_lang_header(lang_code: str):
         return [f"{lang_code}: {h}" for h in per_lang_headers]
@@ -201,7 +199,8 @@ def create_examples_table(data: List[Tuple[str, Dict[str, Entry]]]) -> List[List
             aux_ref = sum([e.auxiliary_refinements_cnt for e in ex_lang_data])
             aux_c = sum([e.auxiliary_constraints_cnt for e in ex_lang_data])
             bypass = sum([e.bypass_cnt for e in ex_lang_data])
-            row += [p_ref, p_c, r_ref, r_c, tn, fn, fp, tp, aux_annot, aux_ref, aux_c, bypass]
+            failure = any([e.tool_failure for e in ex_lang_data])
+            row += [p_ref, p_c, r_ref, r_c, tn, fn, fp, tp, aux_annot, aux_ref, aux_c, bypass, failure]
         table.append(row)
     return table
 
@@ -209,8 +208,10 @@ def create_examples_table(data: List[Tuple[str, Dict[str, Entry]]]) -> List[List
 def main():
     licorne_data = load_entries("../licorne", is_java=False)
     checker_framework_data = load_entries("../java-checker-framework", is_java=True)
-    compare(checker_framework_data, licorne_data)
-    table = create_examples_table([("lic", licorne_data), ("jcf", checker_framework_data)])
+    liquid_java_data = load_entries("../liquid-java", is_java=True)
+    compare(checker_framework_data, "jcf", licorne_data, "lic")
+    compare(liquid_java_data, "lj", licorne_data, "lic")
+    table = create_examples_table([("lic", licorne_data), ("jcf", checker_framework_data), ("lj", liquid_java_data)])
     os.makedirs("out", exist_ok=True)
     with open("./out/table.csv", "w", newline="") as f:
         wr = csv.writer(f)

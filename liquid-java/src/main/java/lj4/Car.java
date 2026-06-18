@@ -7,7 +7,7 @@ import liquidjava.specification.RefinementAlias;
 @RefinementAlias("Positive(int x) { x > 0}")
 @RefinementAlias("CarAcceptableYears(int x) { x > 1800 && x < 2050}")
 @RefinementAlias("GreaterThan(int x, int y) {x > y}")
-public class Car {
+public class Car {      //> Car::constructor p=(2,2,3/3) r=none
 
     @Refinement("CarAcceptableYears(year)")
     private int year;
@@ -15,12 +15,12 @@ public class Car {
     @Refinement("Positive(_)")
     private int seats;
 
-    public void setYear(@Refinement("CarAcceptableYears(_)") int year) {
+    public void setYear(@Refinement("CarAcceptableYears(_)") int year) {    //> Car::setYear p=(1,1,2/2) r=none
         this.year = year;
     }
 
     @Refinement("CarAcceptableYears(_)")
-    public int getYear() {
+    public int getYear() {  //> Car::getYear p=(0,0,0/0) r=(1,2/2)
         return year;
     }
 
