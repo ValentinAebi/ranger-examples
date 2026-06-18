@@ -1,8 +1,8 @@
+import csv
 import os
 import re
 import sys
-from tokenize import group
-from typing import Dict
+from typing import Dict, List, Any, Tuple
 
 
 class Entry:
@@ -27,11 +27,9 @@ class Entry:
         return f"{self.example_name}::{self.module}::{self.function}"
 
     def __str__(self):
-        str = f"{self.uid()} p=(cnt={self.param_cnt},refinements={self.param_refinements_cnt},expressiveness={self.param_constraints_expressed_cnt}/{self.param_constraints_desired_cnt})"
-        if self.has_return_type:
-            str += f" r=({self.return_type_refinements_cnt},{self.return_type_constraints_expressed_cnt}/{self.return_type_constraints_desired_cnt}))"
-        str += f" bug={self.has_bug} reported={self.reported}"
-        return str
+        return f"{self.uid()} p=(cnt={self.param_cnt},refinements={self.param_refinements_cnt},expressiveness={self.param_constraints_expressed_cnt}/{self.param_constraints_desired_cnt}) " + \
+            f"r=({self.return_type_refinements_cnt},{self.return_type_constraints_expressed_cnt}/{self.return_type_constraints_desired_cnt})) " + \
+            f" bug={self.has_bug} reported={self.reported} aux-annot=({self.auxiliary_annot_cnt},{self.auxiliary_refinements_cnt},{self.auxiliary_constraints_cnt}) bypass={self.bypass_cnt}"
 
 
 def load_entries(dir: str, is_java: bool) -> Dict[str, Entry]:
@@ -80,12 +78,12 @@ def load_entries(dir: str, is_java: bool) -> Dict[str, Entry]:
                         if len(aux_annot_tags) == 0:
                             entry.auxiliary_annot_cnt = 0
                             entry.auxiliary_refinements_cnt = 0
-                            entry.auxiliary_constraints_expressed_cnt = 0
+                            entry.auxiliary_constraints_cnt = 0
                         else:
                             m = re.search(r"aux-annot=\((\d*),(\d*),(\d*)\)", aux_annot_tags[0])
                             entry.auxiliary_annot_cnt = int(m.group(1))
                             entry.auxiliary_refinements_cnt = int(m.group(2))
-                            entry.auxiliary_constraints_expressed_cnt = int(m.group(3))
+                            entry.auxiliary_constraints_cnt = int(m.group(3))
                         bypass_tags = [t for t in sp if t.startswith("bypass")]
                         assert len(bypass_tags) <= 1
                         if len(bypass_tags) == 0:
@@ -137,10 +135,87 @@ def compare(data1: dict[str, Entry], data2: dict[str, Entry]):
     print(f"{diff_cnt} differences", file=sys.stderr)
 
 
+def cross_if_true(b: bool):
+    return "x" if b else " "
+
+
+def mk_lang_data(e: Entry) -> List[Any]:
+    return [e.param_refinements_cnt, e.param_constraints_expressed_cnt, e.return_type_refinements_cnt,
+            e.return_type_constraints_expressed_cnt, e.reported, e.auxiliary_annot_cnt,
+            e.auxiliary_refinements_cnt, e.auxiliary_constraints_cnt, e.bypass_cnt]
+
+
+def create_raw_table(licorne_data: dict[str, Entry], checker_framework_data: dict[str, Entry]) -> List[List[Any]]:
+    general_headers = ["Program", "Module", "Function", "# param", "# desired constr (params)",
+                              "# desired constr (return)", "Bug"]
+    per_lang_headers = ["# ref (params)", "# expressed constr (params)", "# ref (return)",
+                               "# expressed constr (return)", "Reported",
+                               "# aux annot", "# aux ref", "# aux constr", "# bypass"]
+
+    def mk_lang_header(lang_code: str):
+        return [f"{lang_code}: {h}" for h in per_lang_headers]
+
+    all_ids = list(licorne_data.keys())
+    table = [general_headers + mk_lang_header("lic") + mk_lang_header("jcf")]
+    for uid in all_ids:
+        lic_entry = licorne_data[uid]
+        jcf_entry = checker_framework_data[uid]
+        table.append(
+            [lic_entry.example_name, lic_entry.module, lic_entry.function, lic_entry.param_cnt,
+             lic_entry.param_constraints_desired_cnt, lic_entry.return_type_constraints_desired_cnt, lic_entry.has_bug] \
+            + mk_lang_data(lic_entry, "lic") + mk_lang_data(jcf_entry, "jcf")
+        )
+    return table
+
+
+def create_examples_table(data: List[Tuple[str, Dict[str, Entry]]]) -> List[List[Any]]:
+    general_headers = ["prog", "#p", "#p-cstr", "#r-cstr"]
+    per_lang_headers = ["#p-ref", "#p-cstr", "#r-ref",
+                        "#r-cstr", "TN", "FN", "FP", "TP", "#aux-an", "#aux-ref",
+                        "#aux-cstr", "#bypass"]
+
+    def mk_lang_header(lang_code: str):
+        return [f"{lang_code}: {h}" for h in per_lang_headers]
+
+    all_examples = list(set([e.example_name for (_, e) in (data[0])[1].items()]))
+    all_examples.sort()
+    headers = general_headers + [h for (lang_id, _) in data for h in mk_lang_header(lang_id)]
+    table = [headers]
+    for ex in all_examples:
+        ex_general_data = [e for (_, e) in data[0][1].items() if e.example_name == ex]
+        p = sum([e.param_cnt for e in ex_general_data])
+        p_c = sum([e.param_constraints_desired_cnt for e in ex_general_data])
+        r_c = sum([e.return_type_constraints_desired_cnt for e in ex_general_data])
+        row = [ex, p, p_c, r_c]
+        for lang_id, dic in data:
+            ex_lang_data = [e for (_, e) in dic.items() if e.example_name == ex]
+            p_ref = sum([e.param_refinements_cnt for e in ex_lang_data])
+            p_c = sum([e.param_constraints_expressed_cnt for e in ex_lang_data])
+            r_ref = sum([e.return_type_refinements_cnt for e in ex_lang_data])
+            r_c = sum([e.return_type_constraints_expressed_cnt for e in ex_lang_data])
+            tn = len([e for e in ex_lang_data if not e.has_bug and not e.reported])
+            fn = len([e for e in ex_lang_data if e.has_bug and not e.reported])
+            fp = len([e for e in ex_lang_data if not e.has_bug and e.reported])
+            tp = len([e for e in ex_lang_data if e.has_bug and e.reported])
+            aux_annot = sum([e.auxiliary_annot_cnt for e in ex_lang_data])
+            aux_ref = sum([e.auxiliary_refinements_cnt for e in ex_lang_data])
+            aux_c = sum([e.auxiliary_constraints_cnt for e in ex_lang_data])
+            bypass = sum([e.bypass_cnt for e in ex_lang_data])
+            row += [p_ref, p_c, r_ref, r_c, tn, fn, fp, tp, aux_annot, aux_ref, aux_c, bypass]
+        table.append(row)
+    return table
+
+
 def main():
     licorne_data = load_entries("../licorne", is_java=False)
     checker_framework_data = load_entries("../java-checker-framework", is_java=True)
     compare(checker_framework_data, licorne_data)
+    table = create_examples_table([("lic", licorne_data), ("jcf", checker_framework_data)])
+    os.makedirs("out", exist_ok=True)
+    with open("./out/table.csv", "w", newline="") as f:
+        wr = csv.writer(f)
+        for row in table:
+            wr.writerow(row)
 
 
 if __name__ == "__main__":

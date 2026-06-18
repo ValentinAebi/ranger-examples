@@ -7,11 +7,11 @@ import org.checkerframework.checker.index.qual.LengthOf;
 
 
 /** ArrayWrapper is a fixed-size generic collection. */
-public class ArrayWrapper<T> {                              //> ArrayWrapper::constructor p=(1,1,1/1) r=none
+public class ArrayWrapper<T> {
     private final Object @SameLen("this") [] delegate;
 
     @SuppressWarnings("index") // constructor creates object of size @SameLen(this) by definition
-    ArrayWrapper(@NonNegative int size) {                   //> ArrayWrapper::aux-constructor p=(1,1,1/1) r=none
+    ArrayWrapper(@NonNegative int size) {                   //> ArrayWrapper::constructor p=(1,1,1/1) r=none
         delegate = new Object[size];
     }
 

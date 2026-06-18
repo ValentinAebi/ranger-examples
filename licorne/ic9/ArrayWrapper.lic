@@ -1,7 +1,7 @@
 package arrays;
 
 
-class ArrayWrapper[T] (     //> ArrayWrapper::constructor p=(2,2,2/2) r=none
+class ArrayWrapper[T] (
     public size: Length,    //> ArrayWrapper::size p=(0,0,0/0) r=(1,1/1)
     wrapped: Array[T] with it.size() == size
 ) : Sized {
@@ -18,7 +18,7 @@ class ArrayWrapper[T] (     //> ArrayWrapper::constructor p=(2,2,2/2) r=none
 
 object ArrayWrappers {
 
-    fn mkNew[T](size: Length) -> ArrayWrapper[T] {  //> ArrayWrapper::aux-constructor p=(1,1,1/1) r=(0,0/0)
+    fn mkNew[T](size: Length) -> ArrayWrapper[T] {  //> ArrayWrapper::constructor p=(1,1,1/1) r=(0,0/0)
         val wrapped = new Array(size);
         return new ArrayWrapper(size, wrapped);
     }

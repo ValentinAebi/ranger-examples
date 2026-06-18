@@ -6,7 +6,7 @@ typealias Length = [0..]
 
 object IC7 {
 
-    fn removeSubstring_correct_1(original: String, removed: String with length(it) <= length(original)) -> String {     //> IC7::removeSubstring_correct_1 p=(2,1,1/1) r=(0,0/0)
+    fn removeSubstring_correct_1(original: String, removed: String) -> String {     //> IC7::removeSubstring_correct_1 p=(2,0,0/0) r=(0,0/0)
         val i = indexOf(original, removed);
         if (i != -1) {    // checking using !=
             return concat(
@@ -17,7 +17,7 @@ object IC7 {
         return original;
     }
 
-    fn removeSubstring_correct_2(original: String, removed: String with length(it) <= length(original)) -> String {     //> IC7::removeSubstring_correct_2 p=(2,1,1/1) r=(0,0/0)
+    fn removeSubstring_correct_2(original: String, removed: String) -> String {     //> IC7::removeSubstring_correct_2 p=(2,0,0/0) r=(0,0/0)
         val i = indexOf(original, removed);
         if (i > -1) {      // <- checking using >
             return concat(
@@ -28,7 +28,7 @@ object IC7 {
         return original;
     }
 
-    fn removeSubstring_buggy(original: String, removed: String with length(it) <= length(original)) -> String {         //> IC7::removeSubstring_buggy p=(2,1,1/1) r=(0,0/0) BUG REPORTED
+    fn removeSubstring_buggy(original: String, removed: String) -> String {         //> IC7::removeSubstring_buggy p=(2,0,0/0) r=(0,0/0) BUG REPORTED
         val i = indexOf(original, removed);
         // ERROR: missing check for i == -1
         return concat(
@@ -38,7 +38,7 @@ object IC7 {
     }
 
     // alternative using explicit precondition
-    fn removeSubstring_precond(original: String, removed: String where length(removed) <= length(original)) -> String {
+    fn removeSubstring_precond(original: String, removed: String) -> String {
         val i = indexOf(original, removed);
         if (i != -1) {
             return concat(
@@ -60,7 +60,7 @@ object StringOpsPlaceholder {
         panic "not implemented"
     }
 
-    fn indexOf(s: String, target: String with length(it) <= length(s)) -> [-1 ..< length(s) - length(target)] {
+    fn indexOf(s: String, target: String) -> [-1 ..< length(s) - length(target)] {
         panic "not implemented"
     }
 
