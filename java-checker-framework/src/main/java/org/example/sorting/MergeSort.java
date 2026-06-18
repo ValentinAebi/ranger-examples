@@ -14,7 +14,7 @@ import java.util.function.BiFunction;
 
 public class MergeSort {
     
-    public <T extends Comparable<T>> void sort(T[] unsorted, BiFunction<T, T, Boolean> lessThan) {      //> MergeSort::sort p=(2,0,0/0) r=none
+    public <T extends Comparable<T>> void sort(T[] unsorted, BiFunction<T, T, Boolean> lessThan) {      //> MergeSort::sort p=(2,0,0/0) r=none bypass=1
         if (unsorted.length == 0) {
             return;
         }
@@ -23,7 +23,7 @@ public class MergeSort {
         doSort(unsorted, aux, lessThan, 0, unsorted.length - 1);
     }
 
-    private static <T extends Comparable<T>> void doSort(T[] arr, T[] aux, BiFunction<T, T, Boolean> lt, @IndexFor({"#1", "#2"}) int left, @IndexFor({"#1", "#2"}) int right) {       //> MergeSort::doSort p=(5,2,8/8) r=none
+    private static <T extends Comparable<T>> void doSort(T[] arr, T[] aux, BiFunction<T, T, Boolean> lt, @IndexFor({"#1", "#2"}) int left, @IndexFor({"#1", "#2"}) int right) {       //> MergeSort::doSort p=(5,2,8/8) r=none bypass=1
         if (left < right) {
             var mid = (left + right) >>> 1;
             doSort(arr, aux, lt, left, mid);
@@ -34,7 +34,7 @@ public class MergeSort {
         }
     }
 
-    private static <T extends Comparable<T>> void merge(T[] arr, T[] aux, BiFunction<T, T, Boolean> lessThan, @IndexFor({"#1", "#2"}) @LessThan("#6 + 1") int left,                     //> MergeSort::merge p=(6,4,13/13) r=none BUG REPORTED
+    private static <T extends Comparable<T>> void merge(T[] arr, T[] aux, BiFunction<T, T, Boolean> lessThan, @IndexFor({"#1", "#2"}) @LessThan("#6 + 1") int left,   //> MergeSort::merge p=(6,4,13/13) r=none BUG REPORTED aux-annot=(1,1,2) bypass=1
                                                         @IndexFor({"#1", "#2"}) int mid, @IndexFor({"#1", "#2"}) int right) {
         @IndexOrHigh("aux") int i = left, j = mid + 1;
         

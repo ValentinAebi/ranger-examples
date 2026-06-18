@@ -8,7 +8,7 @@ object Test {
         val c = Cars.newCarWithDefaultValues();
         c.setYear(a);
 
-        val j: [1801..] = c.getYear();
+        val j: [1801..] = c.getYear();      // we ignore these annotations, they are needed only for testing
         val k: [2021..] = getYear();
     }
 
@@ -17,7 +17,7 @@ object Test {
         val c = Cars.newCarWithDefaultValues();
         c.setYear(a);        // ERROR: bad value
 
-        val j: [1801..] = c.getYear();
+        val j: [1801..] = c.getYear();      // we ignore these annotations, they are needed only for testing
         val k: [2021..] = getYear();
     }
 

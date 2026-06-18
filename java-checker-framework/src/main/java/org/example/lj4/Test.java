@@ -16,7 +16,7 @@ public class Test {
         c.setYear(a);
 
         @IntRange(from = 1801)
-        int j = c.getYear();
+        int j = c.getYear();      // we ignore these annotations, they are needed only for testing
 
         @IntRange(from = 2021)
         int k = getYear();
@@ -28,7 +28,7 @@ public class Test {
         c.setYear(a);               // ERROR: bad value
 
         @IntRange(from = 1801)
-        int j = c.getYear();
+        int j = c.getYear();      // we ignore these annotations, they are needed only for testing
 
         @IntRange(from = 2021)
         int k = getYear();

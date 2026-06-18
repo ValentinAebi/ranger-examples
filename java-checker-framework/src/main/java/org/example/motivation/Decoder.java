@@ -9,7 +9,7 @@ import org.checkerframework.checker.index.qual.Positive;
 
 public class Decoder {
     
-    public static List<Point<@NonNegative @LessThan("#2") Integer, @NonNegative @LessThan("#3") Integer>> decodeAll(    //> Decoder::decodeAll p=(3,2,2/2) r=(4,4/4) REPORTED
+    public static List<Point<@NonNegative @LessThan("#2") Integer, @NonNegative @LessThan("#3") Integer>> decodeAll(    //> Decoder::decodeAll p=(3,2,2/2) r=(4,4/4) bypass=1 REPORTED
         Integer[] data, @Positive int xSize, @Positive int ySize
     ) {
         var validData = filter(arrayToList(data), (d) -> d >= 0);
@@ -20,7 +20,7 @@ public class Decoder {
         });
     }
 
-    private static Point<@NonNegative @LessThan("#2") Integer, @NonNegative @LessThan("#3") Integer> decode(            //> Decoder::decode p=(3,3,3/3) r=(4,4/4)
+    private static Point<@NonNegative @LessThan("#2") Integer, @NonNegative @LessThan("#3") Integer> decode(            //> Decoder::decode p=(3,3,3/3) r=(4,4/4) bypass=4
         @NonNegative int datapoint, @Positive int xSize, @Positive int ySize
     ) {
         var zero = 0;

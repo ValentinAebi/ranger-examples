@@ -1,6 +1,7 @@
 import os
 import re
 import sys
+from tokenize import group
 from typing import Dict
 
 
@@ -17,6 +18,10 @@ class Entry:
     return_type_constraints_desired_cnt: int
     has_bug: bool
     reported: bool
+    auxiliary_annot_cnt: int
+    auxiliary_refinements_cnt: int
+    auxiliary_constraints_cnt: int
+    bypass_cnt: int
 
     def uid(self):
         return f"{self.example_name}::{self.module}::{self.function}"
@@ -30,10 +35,13 @@ class Entry:
 
 
 def load_entries(dir: str, is_java: bool) -> Dict[str, Entry]:
+    ext = ".java" if is_java else ".lic"
     entries = {}
     for top_level_subdir in os.listdir(dir):
         for (subdir_path, _, filenames) in os.walk(os.path.join(dir, top_level_subdir)):
             for filename in filenames:
+                if not filename.endswith(ext):
+                    continue
                 for raw_line in open(os.path.join(subdir_path, filename)):
                     try:
                         line = raw_line.replace("\n", "").replace("\r", "").lower()
@@ -67,6 +75,25 @@ def load_entries(dir: str, is_java: bool) -> Dict[str, Entry]:
                             entry.return_type_constraints_expressed_cnt = int(m.group(2))
                             entry.return_type_constraints_desired_cnt = int(m.group(3))
                         sp = sp[1:]
+                        aux_annot_tags = [t for t in sp if t.startswith("aux-annot")]
+                        assert len(aux_annot_tags) <= 1
+                        if len(aux_annot_tags) == 0:
+                            entry.auxiliary_annot_cnt = 0
+                            entry.auxiliary_refinements_cnt = 0
+                            entry.auxiliary_constraints_expressed_cnt = 0
+                        else:
+                            m = re.search(r"aux-annot=\((\d*),(\d*),(\d*)\)", aux_annot_tags[0])
+                            entry.auxiliary_annot_cnt = int(m.group(1))
+                            entry.auxiliary_refinements_cnt = int(m.group(2))
+                            entry.auxiliary_constraints_expressed_cnt = int(m.group(3))
+                        bypass_tags = [t for t in sp if t.startswith("bypass")]
+                        assert len(bypass_tags) <= 1
+                        if len(bypass_tags) == 0:
+                            entry.bypass_cnt = 0
+                        else:
+                            m = re.search(r"bypass=(\d*)", bypass_tags[0])
+                            entry.bypass_cnt = int(m.group(1))
+                        sp = [t for t in sp if not t.startswith("aux-annot") and not t.startswith("bypass")]
                         entry.has_bug = "bug" in sp
                         if entry.has_bug:
                             sp.remove("bug")
@@ -76,10 +103,8 @@ def load_entries(dir: str, is_java: bool) -> Dict[str, Entry]:
                         assert len(sp) == 0, f"unknown marker(s): {sp} (complete line is {raw_line})"
                         assert entry.uid() not in entries
                         entries[entry.uid()] = entry
-                    except ValueError as e:
-                        raise ValueError(e.args[0] + f" (complete line is {raw_line})")
-                    except AttributeError as e:
-                        raise ValueError(e.args[0] + f" (complete line is {raw_line})")
+                    except Exception as e:
+                        raise Exception(e.args[0] + f" (complete line is {raw_line})")
     return entries
 
 

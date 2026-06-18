@@ -7,12 +7,6 @@ import arrays.Idx;
 
 object ArrayUtils {
 
-    fn swap[T](arr: Array[T], i: Idx(arr), j: Idx(arr)) {
-        val tmp = arr.get(i);
-        arr.set(i, arr.get(j));
-        arr.set(j, tmp);
-    }
-
     fn arrayCopy[S, D super S](src: Array[S], srcStart: Idx(src),
                                dst: Array[D], dstStart: Idx(dst),
                                len: Length where srcStart + len <= src.length() && dstStart + len <= dst.length()) {
