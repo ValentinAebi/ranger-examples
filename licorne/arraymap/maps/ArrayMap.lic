@@ -64,7 +64,7 @@ class ArrayMap[K sub Any, V sub Any](           //> ArrayMap::constructor p=(3,2
 
 object ArrayMaps {
 
-    fn newEmptyOfCapacity[K sub Any, V sub Any](capacity: Length) -> ArrayMap[K, V] =   //> ArrayMap::aux-constructor p=(1,1,1/1) r=(0,0/0)
+    fn newEmptyOfCapacity[K sub Any, V sub Any](capacity: Length) -> ArrayMap[K, V] =   //> ArrayMap::aux-constructor p=(1,1,1/1) r=none  --  ignoring the (unrefined!) return type since it has no counterpart in the Java implementation
         new ArrayMap(keys = new Array(size = capacity), values = new Array(size = capacity), currSize = 0);
 
 }

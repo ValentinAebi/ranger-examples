@@ -18,7 +18,7 @@ class ArrayWrapper[T] (
 
 object ArrayWrappers {
 
-    fn mkNew[T](size: Length) -> ArrayWrapper[T] {  //> ArrayWrapper::constructor p=(1,1,1/1) r=(0,0/0)
+    fn mkNew[T](size: Length) -> ArrayWrapper[T] {  //> ArrayWrapper::constructor p=(1,1,1/1) r=none  --  ignoring the (unrefined!) return type since it has no counterpart in the Java implementation
         val wrapped = new Array(size);
         return new ArrayWrapper(size, wrapped);
     }

@@ -10,7 +10,7 @@ record Time(    //> Time::constructor p=(3,3,6/6) r=none
     @Refinement("0 <= _ && _ <= 59") int seconds
 ) {
 
-    public Time deltaTime(int h, int m, int s) {    //> Time::deltaTime p=(3,0,0/0) r=none
+    public Time deltaTime(int h, int m, int s) {    //> Time::deltaTime p=(3,0,0/0) r=(0,0/0)
         int sSum = seconds() + s;
         int seconds = (sSum % 60 + 60) % 60;
         int mSum = minutes() + m + (sSum - seconds) / 60;

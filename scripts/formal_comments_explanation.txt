@@ -1,0 +1,42 @@
+
+We count the annotations, casts, true/false positives/negatives at the granularity of "units", which most of the time are methods.
+In rare cases, they can also be constructors of class definitions (i.e. list of fields). There is one case ("ternary-ref" where the unit is a single field).
+
+------------------------------------------------------------------------------------------------------------------------
+Annotation for a unit:
+
+//> module_name::unit_name p=(#annot,#ref,#expr_cstr/#des_cstr) ret=none|(#ref,#expr_cstr/#des_cstr) [aux-annot=(#annot,#ref,#cstr)] [bypass=#casts_or_assert] [REPORTED] [BUG]
+
+p: data relative to parameters
+ret: data relative to the return type (ret=none means constructor, void method, or Unit method)
+
+#annot: all annotations on parameters (hence equal to the number of parameters
+#ref: number of refinements:
+  - Licorne: ranges or explicit refinements; intersection types are broken down and we count every component
+  - Java Index Checker and LiquidJava: we count every @Annotation
+#expr_cstr: number of constraints that could be expressed using the language or framework
+#des_cstr: nuber of desired constraints, i.e. all the constraints that one would want to express. A constraint is typically an upper- or lower-bound, so [a,b] is 2 constraints.
+
+aux-annot: number of auxiliary annotations required in the body of methods for the program to be accepted by the language or tool. In Java, we ignore primitive type annotations (e.g. int).
+  We count the annotations, the refinements, and the constraints that they express.
+
+bypass: number of bypassed conditions. In Licorne, these are all uses of the !! operator. In the Checker Framework, these are uses of @AssumeAssertion. To the best of our knowledge, LiquidJava provides no such mechanism.
+
+REPORTED tag: to mark the units that are reported by the verifier
+
+BUG tag: to mark the units that contain a bug (i.e. the units that we expect to be reported by the verifiers)
+
+
+Note: in order to have the same number of units in all versions of the examples (i.e. the Licorne version, the LiquidJava version, etc.),
+we sometimes ignore auxiliary constructors in Java, or the **unrefined!** return type of Licorne object methods that serve as auxiliary
+constructors. In most cases this does not change anything to the significance of the results, and even when it does, we
+make sure that this does not favor Licorne over the other tools.
+
+------------------------------------------------------------------------------------------------------------------------
+What the script does: The Python script collects all the formal comments expressed in the above format. It does so for
+the examples expressed using each one of Licorne, the Checker Framework, and Liquid Java. It also traverses the Scala
+version of the examples, where the comments report the number of intermediate annotations. The script then checks that
+the collected data is consistent (e.g. a unit that has a BUG tag in the Licorne version should also have it in the
+other versions). The script then sums all the counts by example and outputs the resulting table, which it also converts
+to LaTeX tabulate format.
+
