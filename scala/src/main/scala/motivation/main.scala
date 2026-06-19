@@ -3,27 +3,27 @@ package motivation
 import motivation.Lists.*
 
 
-def decodeAll(data: Array[Int], xSize: Int, ySize: Int) = {
+def decodeAll(data: Array[Int], xSize: Int, ySize: Int) = {   //> Decoder::decodeAll
   val validData = filter(data.toList, _ >= 0)
   map(validData, decode(_, xSize, ySize))
 }
 
-def decode(datapoint: Int, xSize: Int, ySize: Int) = {
+def decode(datapoint: Int, xSize: Int, ySize: Int) = {        //> Decoder::decode
   val x = clamp(0, xSize - 1, datapoint / 256)
   val y = datapoint % ySize
   Point(x, y)
 }
 
-def clamp(min: Int, max: Int, x: Int) =
+def clamp(min: Int, max: Int, x: Int) =                       //> Decoder::clamp
   if x <= min then min
   else if x <= max then x
   else max
 
-case class Point(x: Int, y: Int)
+case class Point(x: Int, y: Int)                              //> Point::constructor
 
 object Lists {
 
-  def filter[T](ls: List[T], p: T => Boolean) = {
+  def filter[T](ls: List[T], p: T => Boolean) = {             //> List::filter aux-annot=1
     var rev = List.empty[T]
     var rem = ls
     while (rem.nonEmpty) {
@@ -35,7 +35,7 @@ object Lists {
     reverse(rev)
   }
 
-  def reverse[T](ls: List[T]): List[T] = {
+  def reverse[T](ls: List[T]): List[T] = {                  //> List::reverse aux-annot=1
     var rev = List.empty[T]
     var rem = ls
     while (rem.nonEmpty) {
@@ -45,7 +45,7 @@ object Lists {
     reverse(rev)
   }
 
-  def map[T, U](ls: List[T], f: T => U): List[U] = {
+  def map[T, U](ls: List[T], f: T => U): List[U] = {      //> List::map aux-annot=1
     // for this one we reverse the list before iterating it,
     // to show that it does not change the number of annotations required
     var res = List.empty[U]
@@ -59,7 +59,7 @@ object Lists {
 
 }
 
-extension [T](a: Array[T]) def toList: List[T] = {
+extension [T](a: Array[T]) def toList: List[T] = {      //> Array::toList aux-annot=1
   var ls = List.empty[T]
   var i = a.length - 1
   while (i >= 0) {

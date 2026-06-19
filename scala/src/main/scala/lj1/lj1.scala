@@ -1,7 +1,7 @@
 package lj1
 
 
-def fib_original(n: Int): Int = {
+def fib_original(n: Int): Int = {   //> Fibonacci::fib_original
   if (n <= 1) {
     0
   } else {
@@ -9,7 +9,7 @@ def fib_original(n: Int): Int = {
   }
 }
 
-def fib_base_case_fixed(n: Int): Int = {
+def fib_base_case_fixed(n: Int): Int = {  //> Fibonacci::fib_base_case_fixed
   if (n <= 1) {
     n
   } else {

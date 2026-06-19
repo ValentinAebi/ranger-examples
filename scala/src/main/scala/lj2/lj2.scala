@@ -1,7 +1,7 @@
 package lj2
 
 
-def sum_original(n: Int): Int = {
+def sum_original(n: Int): Int = {   //> Sum::sum_original
   if (n <= 1) {
     0
   } else {
@@ -10,7 +10,7 @@ def sum_original(n: Int): Int = {
   }
 }
 
-def sum_fixed(n: Int): Int = {
+def sum_fixed(n: Int): Int = {    //> Sum::sum_fixed
   if (n < 0) {
     0
   } else if (n <= 1) {

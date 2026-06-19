@@ -23,6 +23,7 @@ class Entry:
     auxiliary_refinements_cnt: int = 0
     auxiliary_constraints_cnt: int = 0
     bypass_cnt: int = 0
+    is_scala: bool = False
 
     def uid(self):
         return f"{self.example_name}::{self.module}::{self.function}"
@@ -33,8 +34,7 @@ class Entry:
             f" bug={self.has_bug} reported={self.reported} aux-annot=({self.auxiliary_annot_cnt},{self.auxiliary_refinements_cnt},{self.auxiliary_constraints_cnt}) bypass={self.bypass_cnt}"
 
 
-def load_entries(dir: str, is_java: bool) -> Dict[str, Entry]:
-    ext = ".java" if is_java else ".lic"
+def load_entries(dir: str, ext: str) -> Dict[str, Entry]:
     entries = {}
     for top_level_subdir in os.listdir(dir):
         for (subdir_path, _, filenames) in os.walk(os.path.join(dir, top_level_subdir)):
@@ -54,44 +54,53 @@ def load_entries(dir: str, is_java: bool) -> Dict[str, Entry]:
                         sp = list(filter(lambda x: len(x) > 0, sp))
                         entry = Entry()
                         entry.example_name = (
-                            os.path.normpath(subdir_path).split(os.sep)[-1] if is_java else top_level_subdir).lower()
+                            (top_level_subdir if ext == ".lic" else os.path.normpath(subdir_path).split(os.sep)[-1])
+                            .lower())
                         (entry.module, entry.function) = [s.lower() for s in sp[0].split("::")]
                         sp = sp[1:]
-                        m = re.search(r"p=\((\d*),(\d*),(\d*)/(\d*)\)", sp[0])
-                        entry.param_cnt = int(m.group(1))
-                        entry.param_refinements_cnt = int(m.group(2))
-                        entry.param_constraints_expressed_cnt = int(m.group(3))
-                        entry.param_constraints_desired_cnt = int(m.group(4))
-                        sp = sp[1:]
-                        assert sp[0].startswith("r="), raw_line
-                        if sp[0][2:] != "none":
-                            m = re.search(r"r=\((\d*),(\d*)/(\d*)\)", sp[0])
-                            entry.return_type_refinements_cnt = int(m.group(1))
-                            entry.return_type_constraints_expressed_cnt = int(m.group(2))
-                            entry.return_type_constraints_desired_cnt = int(m.group(3))
-                        sp = sp[1:]
-                        aux_annot_tags = [t for t in sp if t.startswith("aux-annot")]
-                        assert len(aux_annot_tags) <= 1
-                        if len(aux_annot_tags) > 0:
-                            m = re.search(r"aux-annot=\((\d*),(\d*),(\d*)\)", aux_annot_tags[0])
-                            entry.auxiliary_annot_cnt = int(m.group(1))
-                            entry.auxiliary_refinements_cnt = int(m.group(2))
-                            entry.auxiliary_constraints_cnt = int(m.group(3))
-                        bypass_tags = [t for t in sp if t.startswith("bypass")]
-                        assert len(bypass_tags) <= 1, "too many bypass tags"
-                        if len(bypass_tags) > 0:
-                            m = re.search(r"bypass=(\d*)", bypass_tags[0])
-                            entry.bypass_cnt = int(m.group(1))
-                        sp = [t for t in sp if not t.startswith("aux-annot") and not t.startswith("bypass")]
-                        entry.has_bug = "bug" in sp
-                        if entry.has_bug:
-                            sp.remove("bug")
-                        entry.reported = "reported" in sp
-                        if entry.reported:
-                            sp.remove("reported")
-                        entry.tool_failure = "fail" in sp
-                        if entry.tool_failure:
-                            sp.remove("fail")
+                        if ext == ".scala":
+                            assert len(sp) <= 1, raw_line
+                            if len(sp) == 1:
+                                entry.is_scala = True
+                                m = re.search(r"aux-annot=(\d*)", sp[0])
+                                entry.auxiliary_annot_cnt = int(m.group(1))
+                                sp = sp[1:]
+                        else:
+                            m = re.search(r"p=\((\d*),(\d*),(\d*)/(\d*)\)", sp[0])
+                            entry.param_cnt = int(m.group(1))
+                            entry.param_refinements_cnt = int(m.group(2))
+                            entry.param_constraints_expressed_cnt = int(m.group(3))
+                            entry.param_constraints_desired_cnt = int(m.group(4))
+                            sp = sp[1:]
+                            assert sp[0].startswith("r="), raw_line
+                            if sp[0][2:] != "none":
+                                m = re.search(r"r=\((\d*),(\d*)/(\d*)\)", sp[0])
+                                entry.return_type_refinements_cnt = int(m.group(1))
+                                entry.return_type_constraints_expressed_cnt = int(m.group(2))
+                                entry.return_type_constraints_desired_cnt = int(m.group(3))
+                            sp = sp[1:]
+                            aux_annot_tags = [t for t in sp if t.startswith("aux-annot")]
+                            assert len(aux_annot_tags) <= 1
+                            if len(aux_annot_tags) > 0:
+                                m = re.search(r"aux-annot=\((\d*),(\d*),(\d*)\)", aux_annot_tags[0])
+                                entry.auxiliary_annot_cnt = int(m.group(1))
+                                entry.auxiliary_refinements_cnt = int(m.group(2))
+                                entry.auxiliary_constraints_cnt = int(m.group(3))
+                            bypass_tags = [t for t in sp if t.startswith("bypass")]
+                            assert len(bypass_tags) <= 1, "too many bypass tags"
+                            if len(bypass_tags) > 0:
+                                m = re.search(r"bypass=(\d*)", bypass_tags[0])
+                                entry.bypass_cnt = int(m.group(1))
+                            sp = [t for t in sp if not t.startswith("aux-annot") and not t.startswith("bypass")]
+                            entry.has_bug = "bug" in sp
+                            if entry.has_bug:
+                                sp.remove("bug")
+                            entry.reported = "reported" in sp
+                            if entry.reported:
+                                sp.remove("reported")
+                            entry.tool_failure = "fail" in sp
+                            if entry.tool_failure:
+                                sp.remove("fail")
                         assert len(sp) == 0, f"unknown marker(s): {sp}"
                         assert entry.uid() not in entries, "duplicate uid"
                         entries[entry.uid()] = entry
@@ -115,6 +124,8 @@ def compare(data1: dict[str, Entry], code1: str, data2: dict[str, Entry], code2:
             continue
         if not uid in data2:
             print(f"missing in {code2} data: ", uid)
+            continue
+        if code1 == "scala" or code2 == "scala":
             continue
         entry1 = data1[uid]
         entry2 = data2[uid]
@@ -141,29 +152,6 @@ def mk_lang_data(e: Entry) -> List[Any]:
     return [e.param_refinements_cnt, e.param_constraints_expressed_cnt, e.return_type_refinements_cnt,
             e.return_type_constraints_expressed_cnt, e.reported, e.auxiliary_annot_cnt,
             e.auxiliary_refinements_cnt, e.auxiliary_constraints_cnt, e.bypass_cnt]
-
-
-def create_raw_table(licorne_data: dict[str, Entry], checker_framework_data: dict[str, Entry]) -> List[List[Any]]:
-    general_headers = ["Program", "Module", "Function", "# param", "# desired constr (params)",
-                              "# desired constr (return)", "Bug"]
-    per_lang_headers = ["# ref (params)", "# expressed constr (params)", "# ref (return)",
-                               "# expressed constr (return)", "Reported",
-                               "# aux annot", "# aux ref", "# aux constr", "# bypass"]
-
-    def mk_lang_header(lang_code: str):
-        return [f"{lang_code}: {h}" for h in per_lang_headers]
-
-    all_ids = list(licorne_data.keys())
-    table = [general_headers + mk_lang_header("lic") + mk_lang_header("jcf")]
-    for uid in all_ids:
-        lic_entry = licorne_data[uid]
-        jcf_entry = checker_framework_data[uid]
-        table.append(
-            [lic_entry.example_name, lic_entry.module, lic_entry.function, lic_entry.param_cnt,
-             lic_entry.param_constraints_desired_cnt, lic_entry.return_type_constraints_desired_cnt, lic_entry.has_bug] \
-            + mk_lang_data(lic_entry, "lic") + mk_lang_data(jcf_entry, "jcf")
-        )
-    return table
 
 
 def create_examples_table(data: List[Tuple[str, Dict[str, Entry]]]) -> List[List[Any]]:
@@ -206,12 +194,15 @@ def create_examples_table(data: List[Tuple[str, Dict[str, Entry]]]) -> List[List
 
 
 def main():
-    licorne_data = load_entries("../licorne", is_java=False)
-    checker_framework_data = load_entries("../java-checker-framework", is_java=True)
-    liquid_java_data = load_entries("../liquid-java", is_java=True)
+    licorne_data = load_entries("../licorne", ext=".lic")
+    checker_framework_data = load_entries("../java-checker-framework", ext=".java")
+    liquid_java_data = load_entries("../liquid-java", ext=".java")
+    scala_data = load_entries("../scala", ext=".scala")
     compare(checker_framework_data, "jcf", licorne_data, "lic")
     compare(liquid_java_data, "lj", licorne_data, "lic")
-    table = create_examples_table([("lic", licorne_data), ("jcf", checker_framework_data), ("lj", liquid_java_data)])
+    compare(scala_data, "scala", licorne_data, "lic")
+    table = create_examples_table(
+        [("lic", licorne_data), ("jcf", checker_framework_data), ("lj", liquid_java_data), ("scala", scala_data)])
     os.makedirs("out", exist_ok=True)
     with open("./out/table.csv", "w", newline="") as f:
         wr = csv.writer(f)

@@ -3,27 +3,27 @@ package arraymap
 import scala.reflect.ClassTag
 import scala.util.boundary
 
-class ArrayMap[K: ClassTag, V: ClassTag] private(
+class ArrayMap[K: ClassTag, V: ClassTag] private( //> ArrayMap::constructor
                                                   private val keys: Array[Option[K]],
                                                   private val values: Array[Option[V]],
                                                   private var _currSize: Int
                                                 ) {
 
-  def this(capacity: Int) = this(new Array(capacity), new Array(capacity), 0)
+  def this(capacity: Int) = this(new Array(capacity), new Array(capacity), 0) //> ArrayMap::aux-constructor
 
-  export keys.length as capacity
+  export keys.length as capacity //> ArrayMap::capacity
 
-  def currSize: Int = _currSize
+  def currentSize: Int = _currSize //> ArrayMap::currentSize
 
-  def get(k: K): Option[V] = {
+  def get(k: K): Option[V] = { //> ArrayMap::get
     val idx = keys.indexOf(Some(k))
     Option.when(idx != -1) {
       values(idx)
     }.flatten
   }
 
-  def put(k: K, v: V): Boolean = {
-    val preSize = currSize
+  def put(k: K, v: V): Boolean = { //> ArrayMap::put
+    val preSize = currentSize
     val canAdd = preSize < capacity
     if (canAdd) {
       boundary {
@@ -40,8 +40,8 @@ class ArrayMap[K: ClassTag, V: ClassTag] private(
     canAdd
   }
 
-  def remove(k: K): Boolean = {
-    val preSize = currSize
+  def remove(k: K): Boolean = { //> ArrayMap::remove
+    val preSize = currentSize
     if (preSize > 0) {
       val idx = keys.indexOf(Some(k))
       if idx == -1 then false
@@ -54,4 +54,15 @@ class ArrayMap[K: ClassTag, V: ClassTag] private(
     } else false
   }
 
+}
+
+extension [T](a: Array[T]) def indexOf(elem: T): Int = {    //> Array::indexOf
+  var i = 0
+  while (i < a.length) {
+    if (a(i) == elem) {
+      return i
+    }
+    i += 1
+  }
+  -1
 }

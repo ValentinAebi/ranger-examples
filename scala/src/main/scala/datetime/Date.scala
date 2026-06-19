@@ -6,9 +6,9 @@ type Year = Int
 type Month = Int
 type DayOfMonth = Int
 
-final case class Date(year: Year, month: Month, day: DayOfMonth) {
+final case class Date(year: Year, month: Month, day: DayOfMonth) {    //> Date::constructor
 
-  def nextDay(): Date =
+  def nextDay(): Date =                 //> Date::nextDay
     if (this.day < nDaysInMonth(this.year, this.month)) {
       new Date(year = this.year, month = this.month, day = this.day + 1);
     } else if (this.month < 12) {
@@ -17,7 +17,7 @@ final case class Date(year: Year, month: Month, day: DayOfMonth) {
       new Date(year = this.year + 1, month = 1, day = 1);
     }
 
-  def previousDay(): Date =
+  def previousDay(): Date =           //> Date::previousDay
     if (this.day > 1) {
       new Date(year = this.year, month = this.month, day = this.day - 1);
     } else if (this.month > 1) {
@@ -30,7 +30,7 @@ final case class Date(year: Year, month: Month, day: DayOfMonth) {
 
 object Date {
 
-  def nDaysInMonth(year: Year, month: Month): Int = {
+  def nDaysInMonth(year: Year, month: Month): Int = { //> Date::nDaysInMonth
     if (month == 2) {
       // slightly simplified...
       return if year % 4 != 0 then 28
