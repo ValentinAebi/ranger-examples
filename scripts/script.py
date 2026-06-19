@@ -4,24 +4,24 @@ import re
 import sys
 from typing import Dict, List, Any, Tuple, Final
 
-#@formatter:off
-
 hg_group = "group"
 hg_prog = "prog"
 hg_sig_type_cnt = "std"
 hg_sig_cstr_cnt = "csr"
 
+hs_failed = "fail"
+
 hs_sig_ref_cnt = "ref"
 hs_sig_cstr_cnt = "csr"
+
+hs_aux_annot_cnt = "aux"
+hs_aux_ref_cnt = "auxr"
+hs_bypass_cnt = "cas"
+
 hs_tn_cnt = "tn"
 hs_fn_cnt = "fn"
 hs_fp_cnt = "fp"
 hs_tp_cnt = "tp"
-hs_aux_annot_cnt = "aux"
-hs_aux_ref_cnt = "auxr"
-hs_bypass_cnt = "cas"
-hs_failed = "fail"
-
 
 licorne_code = "R"
 checker_code = "C"
@@ -29,8 +29,6 @@ liquid_java_code = "L"
 scala_code = "S"
 
 liquid_java_excluded_examples = {"ArrayMap", "FilterLessThan"}
-
-# @formatter:on
 
 groups = {
     "rng": ["Datetime", "FilterLessThan", "MaxPos", "Motivation"],
@@ -45,14 +43,16 @@ per_lang_headers: Final = [
     (hs_failed, {liquid_java_code}),
     (hs_sig_ref_cnt, {licorne_code, checker_code, liquid_java_code}),
     (hs_sig_cstr_cnt, {licorne_code, checker_code, liquid_java_code}),
+    (hs_aux_annot_cnt, {licorne_code, checker_code, liquid_java_code, scala_code}),
+    (hs_aux_ref_cnt, {licorne_code, checker_code}),
+    (hs_bypass_cnt, {licorne_code, checker_code}),
     (hs_tn_cnt, {licorne_code, checker_code, liquid_java_code}),
     (hs_fn_cnt, {licorne_code, checker_code, liquid_java_code}),
     (hs_fp_cnt, {licorne_code, checker_code, liquid_java_code}),
     (hs_tp_cnt, {licorne_code, checker_code, liquid_java_code}),
-    (hs_aux_annot_cnt, {licorne_code, checker_code, liquid_java_code, scala_code}),
-    (hs_aux_ref_cnt, {licorne_code, checker_code}),
-    (hs_bypass_cnt, {licorne_code, checker_code}),
 ]
+
+excluded_headers = {hs_failed}
 
 
 class Entry:
@@ -199,8 +199,8 @@ def compare(data1: dict[str, Entry], code1: str, data2: dict[str, Entry], code2:
     print(f"{diff_cnt} differences", file=sys.stderr)
 
 
-def cross_if_true(b: bool):
-    return "x" if b else " "
+def textsc(s: str) -> str:
+    return "\\textsc{" + s + "}"
 
 
 def mk_lang_data(e: Entry) -> List[Any]:
@@ -215,7 +215,7 @@ def create_per_example_dict(data: List[Tuple[str, Dict[str, Entry]]]) \
     for group_id, group in groups.items():
         for ex_full_case in group:
             ex_low_case = ex_full_case.lower()
-            ex_general_data = [e for (_, e) in data[0][1].items() if e.example_name == ex_full_case]
+            ex_general_data = [e for (_, e) in data[0][1].items() if e.example_name == ex_low_case]
             group = group_id
             example_general_metrics = {
                 hg_group: group,
@@ -226,7 +226,7 @@ def create_per_example_dict(data: List[Tuple[str, Dict[str, Entry]]]) \
             }
             example_per_lang_metrics: Dict[str, Dict[str, Any]] = dict([(h, {}) for h, _ in per_lang_headers])
             for lang_id, dic in data:
-                if lang_id == liquid_java_code and ex_low_case in liquid_java_excluded_examples:
+                if lang_id == liquid_java_code and ex_full_case in liquid_java_excluded_examples:
                     for h, _ in per_lang_headers:
                         example_per_lang_metrics[h][lang_id] = ""
                 else:
@@ -236,21 +236,21 @@ def create_per_example_dict(data: List[Tuple[str, Dict[str, Entry]]]) \
                     example_per_lang_metrics[hs_sig_cstr_cnt][lang_id] = sum(
                         [e.param_constraints_expressed_cnt + e.return_type_constraints_expressed_cnt for e in
                          ex_lang_data])
-                    example_per_lang_metrics[hs_tn_cnt][lang_id] = len(
-                        [e for e in ex_lang_data if not e.has_bug and not e.reported])
-                    example_per_lang_metrics[hs_fn_cnt][lang_id] = len(
-                        [e for e in ex_lang_data if e.has_bug and not e.reported])
-                    example_per_lang_metrics[hs_fp_cnt][lang_id] = len(
-                        [e for e in ex_lang_data if not e.has_bug and e.reported])
-                    example_per_lang_metrics[hs_tp_cnt][lang_id] = len(
-                        [e for e in ex_lang_data if e.has_bug and e.reported])
+                    tn = len([e for e in ex_lang_data if not e.has_bug and not e.reported])
+                    fn = len([e for e in ex_lang_data if e.has_bug and not e.reported])
+                    fp = len([e for e in ex_lang_data if not e.has_bug and e.reported])
+                    tp = len([e for e in ex_lang_data if e.has_bug and e.reported])
+                    example_per_lang_metrics[hs_tn_cnt][lang_id] = tn
+                    example_per_lang_metrics[hs_fn_cnt][lang_id] = fn
+                    example_per_lang_metrics[hs_fp_cnt][lang_id] = fp
+                    example_per_lang_metrics[hs_tp_cnt][lang_id] = tp
                     example_per_lang_metrics[hs_aux_annot_cnt][lang_id] = sum(
                         [e.auxiliary_annot_cnt for e in ex_lang_data])
                     example_per_lang_metrics[hs_aux_ref_cnt][lang_id] = sum(
                         [e.auxiliary_refinements_cnt for e in ex_lang_data])
                     example_per_lang_metrics[hs_bypass_cnt][lang_id] = sum([e.bypass_cnt for e in ex_lang_data])
                     example_per_lang_metrics[hs_failed][lang_id] = any([e.tool_failure for e in ex_lang_data])
-            per_example[ex_low_case] = (example_general_metrics, example_per_lang_metrics)
+            per_example[ex_full_case] = (example_general_metrics, example_per_lang_metrics)
     return per_example
 
 
@@ -259,10 +259,10 @@ def create_table(all_data: Dict[str, Tuple[Dict[str, Any], Dict[str, Dict[str, i
     table = []
     for _, group in groups.items():
         for ex in group:
-            general_metrics, per_lang_metrics = all_data[ex.lower()]
+            general_metrics, per_lang_metrics = all_data[ex]
             row = [general_metrics[h] for h in general_headers]
             for h, h_langs in per_lang_headers:
-                if h == hs_failed:
+                if h in excluded_headers:
                     continue
                 for lang_id in languages:
                     if lang_id not in h_langs:
@@ -277,50 +277,66 @@ def write_csv(table: List[List[str]], languages: List[str]) -> None:
     with open("./out/table.csv", "w", newline="") as f:
         wr = csv.writer(f)
         header = general_headers + [f"{h} ({l})" for h, h_langs in per_lang_headers for l in
-                                    languages if l in h_langs and h != hs_failed]
+                                    languages if l in h_langs and not h in excluded_headers]
         wr.writerow(header)
         for row in table:
             wr.writerow(row)
 
 
 def mk_latex_table(table: List[List[str]], languages: List[str]) -> str:
-    def mk_row(row: List[Any]):
-        row_str = ""
-        first_col = True
-        for cell in row:
-            if not first_col:
-                row_str += " & "
-            cell = str(cell)
-            row_str += str("x" if cell == "True" else "" if cell == "False" else cell)
-            first_col = False
-        row_str += "\\\\\n"
-        return row_str
-
     col_settings = "| "
     for _ in general_headers:
         col_settings += "c "
     for h, h_langs in per_lang_headers:
-        if h != hs_failed:
+        if h not in excluded_headers:
             col_settings += "| "
             for _ in range(len(h_langs)):
                 col_settings += "c "
     col_settings += "|"
     rs = "\\begin{tabular}{ " + col_settings + " }\n"
     rs += "\\toprule\n"
-    header_1 = (["\\textsc{" + h + "}" for h in general_headers]
-                + ["\\multicolumn{" + str(len(h_langs)) + "}{c}{\\textsc{" + h + "}}" for h, h_langs in per_lang_headers
-                   if h != hs_failed])
+    header_1 = ([textsc(h) for h in general_headers]
+                + ["\\multicolumn{" + str(len(h_langs)) + "}{c}{" + textsc(h) + "}" for h, h_langs in per_lang_headers
+                   if h not in excluded_headers])
+    header_2 = ["" for _ in general_headers] + [textsc(l) for h, h_langs in per_lang_headers for l in
+                                                languages if l in h_langs and h not in excluded_headers]
+
+    def mk_row(row: List[Any]):
+        row_str = ""
+        for i, cell in enumerate(row):
+            if i > 0:
+                row_str += " & "
+            cell = str(cell)
+            if i == 0 and cell.lower() != "total":
+                cell = textsc(cell)
+            row_str += cell
+        row_str += " \\\\\n"
+        return row_str
+
     rs += mk_row(header_1)
-    header_2 = ["" for _ in general_headers] + ["\\textsc{" + l + "}" for h, h_langs in per_lang_headers for l in
-                                                languages if l in h_langs and h != hs_failed]
     rs += mk_row(header_2)
     rs += "\\midrule\n"
-    for row in table:
+    for i, row in enumerate(table):
+        if i == len(table) - 1:
+            rs += "\\midrule\n"
         rs += mk_row(row)
     rs += "\\midrule\n"
     rs += "\\bottomrule\n"
     rs += "\\end{tabular}"
     return rs
+
+
+def add_sum_row(table: List[List[str]]):
+    n_cols = len(table[0])
+    sums: List[Any] = [0 for _ in range(n_cols)]
+    for row in table:
+        for i, cell in enumerate(row):
+            if sums[i] is not None and type(cell) == int:
+                sums[i] += int(cell)
+            else:
+                sums[i] = None
+    table.append(["" if s is None else str(s) for s in sums])
+    table[-1][0] = "Total"
 
 
 def main():
@@ -336,7 +352,10 @@ def main():
          (scala_code, scala_data)])
     languages = [licorne_code, checker_code, liquid_java_code, scala_code]
     table = create_table(per_ex, languages)
+    add_sum_row(table)
+    print("\n\n")
     print(mk_latex_table(table, languages))
+    print("\n\n")
     write_csv(table, languages)
 
 
