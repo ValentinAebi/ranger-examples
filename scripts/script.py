@@ -6,6 +6,7 @@ from typing import Dict, List, Any, Tuple, Final
 
 #@formatter:off
 
+hg_group = "group"
 hg_prog = "prog"
 hg_sig_type_cnt = "std"
 hg_sig_cstr_cnt = "csr"
@@ -27,12 +28,19 @@ checker_code = "C"
 liquid_java_code = "L"
 scala_code = "S"
 
-liquid_java_excluded_examples = {"arraymap", "filterlessthan"}
+liquid_java_excluded_examples = {"ArrayMap", "FilterLessThan"}
 
 # @formatter:on
 
+groups = {
+    "rng": ["Datetime", "FilterLessThan", "MaxPos", "Motivation"],
+    "amap": ["Arraymap"],
+    "sort": ["Sorting"],
+    "ic": ["ic4", "ic5", "ic7", "ic9"],
+    "lj": ["lj1", "lj2", "lj3", "lj4"]
+}
 
-general_headers: Final = [hg_prog, hg_sig_type_cnt, hg_sig_cstr_cnt]
+general_headers: Final = [hg_group, hg_prog, hg_sig_type_cnt, hg_sig_cstr_cnt]
 per_lang_headers: Final = [
     (hs_failed, {liquid_java_code}),
     (hs_sig_ref_cnt, {licorne_code, checker_code, liquid_java_code}),
@@ -203,62 +211,64 @@ def mk_lang_data(e: Entry) -> List[Any]:
 
 def create_per_example_dict(data: List[Tuple[str, Dict[str, Entry]]]) \
         -> Dict[str, Tuple[Dict[str, Any], Dict[str, Dict[str, Any]]]]:
-    all_examples = list(set([e.example_name for (_, e) in (data[0])[1].items()]))
-    all_examples.sort()
     per_example: Dict[str, Tuple[Dict[str, Any], Dict[str, Dict[str, int]]]] = {}  # example -> metric -> language
-    for ex in all_examples:
-        ex_general_data = [e for (_, e) in data[0][1].items() if e.example_name == ex]
-        example_general_metrics = {
-            hg_prog: ex,
-            hg_sig_type_cnt: sum([e.param_cnt + e.ret_cnt for e in ex_general_data]),
-            hg_sig_cstr_cnt: sum(
-                [e.param_constraints_desired_cnt + e.return_type_constraints_desired_cnt for e in ex_general_data]),
-        }
-        example_per_lang_metrics: Dict[str, Dict[str, Any]] = dict([(h, {}) for h, _ in per_lang_headers])
-        for lang_id, dic in data:
-            if lang_id == liquid_java_code and ex in liquid_java_excluded_examples:
-                for h, _ in per_lang_headers:
-                    example_per_lang_metrics[h][lang_id] = ""
-            else:
-                ex_lang_data = [e for (_, e) in dic.items() if e.example_name == ex]
-                example_per_lang_metrics[hs_sig_ref_cnt][lang_id] = sum(
-                    [e.param_refinements_cnt + e.return_type_refinements_cnt for e in ex_lang_data])
-                example_per_lang_metrics[hs_sig_cstr_cnt][lang_id] = sum(
-                    [e.param_constraints_expressed_cnt + e.return_type_constraints_expressed_cnt for e in ex_lang_data])
-                example_per_lang_metrics[hs_tn_cnt][lang_id] = len(
-                    [e for e in ex_lang_data if not e.has_bug and not e.reported])
-                example_per_lang_metrics[hs_fn_cnt][lang_id] = len(
-                    [e for e in ex_lang_data if e.has_bug and not e.reported])
-                example_per_lang_metrics[hs_fp_cnt][lang_id] = len(
-                    [e for e in ex_lang_data if not e.has_bug and e.reported])
-                example_per_lang_metrics[hs_tp_cnt][lang_id] = len(
-                    [e for e in ex_lang_data if e.has_bug and e.reported])
-                example_per_lang_metrics[hs_aux_annot_cnt][lang_id] = sum([e.auxiliary_annot_cnt for e in ex_lang_data])
-                example_per_lang_metrics[hs_aux_ref_cnt][lang_id] = sum(
-                    [e.auxiliary_refinements_cnt for e in ex_lang_data])
-                example_per_lang_metrics[hs_bypass_cnt][lang_id] = sum([e.bypass_cnt for e in ex_lang_data])
-                example_per_lang_metrics[hs_failed][lang_id] = any([e.tool_failure for e in ex_lang_data])
-        per_example[ex] = (example_general_metrics, example_per_lang_metrics)
+    for group_id, group in groups.items():
+        for ex_full_case in group:
+            ex_low_case = ex_full_case.lower()
+            ex_general_data = [e for (_, e) in data[0][1].items() if e.example_name == ex_full_case]
+            group = group_id
+            example_general_metrics = {
+                hg_group: group,
+                hg_prog: ex_full_case,
+                hg_sig_type_cnt: sum([e.param_cnt + e.ret_cnt for e in ex_general_data]),
+                hg_sig_cstr_cnt: sum(
+                    [e.param_constraints_desired_cnt + e.return_type_constraints_desired_cnt for e in ex_general_data]),
+            }
+            example_per_lang_metrics: Dict[str, Dict[str, Any]] = dict([(h, {}) for h, _ in per_lang_headers])
+            for lang_id, dic in data:
+                if lang_id == liquid_java_code and ex_low_case in liquid_java_excluded_examples:
+                    for h, _ in per_lang_headers:
+                        example_per_lang_metrics[h][lang_id] = ""
+                else:
+                    ex_lang_data = [e for (_, e) in dic.items() if e.example_name == ex_low_case]
+                    example_per_lang_metrics[hs_sig_ref_cnt][lang_id] = sum(
+                        [e.param_refinements_cnt + e.return_type_refinements_cnt for e in ex_lang_data])
+                    example_per_lang_metrics[hs_sig_cstr_cnt][lang_id] = sum(
+                        [e.param_constraints_expressed_cnt + e.return_type_constraints_expressed_cnt for e in
+                         ex_lang_data])
+                    example_per_lang_metrics[hs_tn_cnt][lang_id] = len(
+                        [e for e in ex_lang_data if not e.has_bug and not e.reported])
+                    example_per_lang_metrics[hs_fn_cnt][lang_id] = len(
+                        [e for e in ex_lang_data if e.has_bug and not e.reported])
+                    example_per_lang_metrics[hs_fp_cnt][lang_id] = len(
+                        [e for e in ex_lang_data if not e.has_bug and e.reported])
+                    example_per_lang_metrics[hs_tp_cnt][lang_id] = len(
+                        [e for e in ex_lang_data if e.has_bug and e.reported])
+                    example_per_lang_metrics[hs_aux_annot_cnt][lang_id] = sum(
+                        [e.auxiliary_annot_cnt for e in ex_lang_data])
+                    example_per_lang_metrics[hs_aux_ref_cnt][lang_id] = sum(
+                        [e.auxiliary_refinements_cnt for e in ex_lang_data])
+                    example_per_lang_metrics[hs_bypass_cnt][lang_id] = sum([e.bypass_cnt for e in ex_lang_data])
+                    example_per_lang_metrics[hs_failed][lang_id] = any([e.tool_failure for e in ex_lang_data])
+            per_example[ex_low_case] = (example_general_metrics, example_per_lang_metrics)
     return per_example
 
 
 def create_table(all_data: Dict[str, Tuple[Dict[str, Any], Dict[str, Dict[str, int]]]], languages: List[str]) \
         -> List[List[str]]:
-    all_examples = list(all_data.keys())
-    all_examples.sort()
-    assert len(all_examples) == len(set(all_examples)) == 14
     table = []
-    for ex in all_examples:
-        general_metrics, per_lang_metrics = all_data[ex]
-        row = [general_metrics[h] for h in general_headers]
-        for h, h_langs in per_lang_headers:
-            if h == hs_failed:
-                continue
-            for lang_id in languages:
-                if lang_id not in h_langs:
+    for _, group in groups.items():
+        for ex in group:
+            general_metrics, per_lang_metrics = all_data[ex.lower()]
+            row = [general_metrics[h] for h in general_headers]
+            for h, h_langs in per_lang_headers:
+                if h == hs_failed:
                     continue
-                row.append("F" if per_lang_metrics[hs_failed][lang_id] else per_lang_metrics[h][lang_id])
-        table.append(row)
+                for lang_id in languages:
+                    if lang_id not in h_langs:
+                        continue
+                    row.append("F" if per_lang_metrics[hs_failed][lang_id] else per_lang_metrics[h][lang_id])
+            table.append(row)
     return table
 
 
@@ -287,7 +297,7 @@ def mk_latex_table(table: List[List[str]], languages: List[str]) -> str:
         return row_str
 
     col_settings = "| "
-    for h in general_headers:
+    for _ in general_headers:
         col_settings += "c "
     for h, h_langs in per_lang_headers:
         if h != hs_failed:
