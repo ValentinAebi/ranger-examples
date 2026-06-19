@@ -1,5 +1,5 @@
 
-def maxPos_correct(a: Array[Int]): Int = {      //> PositiveMax::maxPos_correct
+def maxPos_correct(a: Array[Int]): Int = {      //> PositiveMax::maxPos_correct loc=12
     var k = 0
     var max = 0
     while (k < a.length) {
@@ -12,7 +12,7 @@ def maxPos_correct(a: Array[Int]): Int = {      //> PositiveMax::maxPos_correct
     max
 }
 
-def maxPos_buggy(a: Array[Int]): Int = {        //> PositiveMax::maxPos_buggy
+def maxPos_buggy(a: Array[Int]): Int = {        //> PositiveMax::maxPos_buggy loc=12
     var k = 0
     var max = 0
     // ERROR: should be <
@@ -26,8 +26,8 @@ def maxPos_buggy(a: Array[Int]): Int = {        //> PositiveMax::maxPos_buggy
     max
 }
 
-def maxPos_moreComplex(a: Array[Int], start: Int, incEven: Int, incOdd: Int): Int = {   //> PositiveMax::maxPos_moreComplex_correct
-    var k = start                                                                       //> PositiveMax::maxPos_moreComplex_buggy
+def maxPos_moreComplex(a: Array[Int], start: Int, incEven: Int, incOdd: Int): Int = {   //> PositiveMax::maxPos_moreComplex_correct loc=16
+    var k = start                                                                       //> PositiveMax::maxPos_moreComplex_buggy loc=16
     var max = 0
     while (k < a.length) {
         val v = a(k)

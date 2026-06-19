@@ -3,26 +3,26 @@ package arraymap
 import scala.reflect.ClassTag
 import scala.util.boundary
 
-class ArrayMap[K: ClassTag, V: ClassTag] private( //> ArrayMap::constructor
+class ArrayMap[K: ClassTag, V: ClassTag] private( //> ArrayMap::constructor loc=5
                                                   private val keys: Array[Option[K]],
                                                   private val values: Array[Option[V]],
                                                   private var _currSize: Int
                                                 ) {
 
-  def this(capacity: Int) = this(new Array(capacity), new Array(capacity), 0) //> ArrayMap::aux-constructor
+  def this(capacity: Int) = this(new Array(capacity), new Array(capacity), 0) //> ArrayMap::aux-constructor loc=1
 
-  export keys.length as capacity //> ArrayMap::capacity
+  export keys.length as capacity //> ArrayMap::capacity loc=1
 
-  def currentSize: Int = _currSize //> ArrayMap::currentSize
+  def currentSize: Int = _currSize //> ArrayMap::currentSize loc=1
 
-  def get(k: K): Option[V] = { //> ArrayMap::get
+  def get(k: K): Option[V] = { //> ArrayMap::get loc=6
     val idx = keys.indexOf(Some(k))
     Option.when(idx != -1) {
       values(idx)
     }.flatten
   }
 
-  def put(k: K, v: V): Boolean = { //> ArrayMap::put
+  def put(k: K, v: V): Boolean = { //> ArrayMap::put loc=17
     val preSize = currentSize
     val canAdd = preSize < capacity
     if (canAdd) {
@@ -40,7 +40,7 @@ class ArrayMap[K: ClassTag, V: ClassTag] private( //> ArrayMap::constructor
     canAdd
   }
 
-  def remove(k: K): Boolean = { //> ArrayMap::remove
+  def remove(k: K): Boolean = { //> ArrayMap::remove loc=13
     val preSize = currentSize
     if (preSize > 0) {
       val idx = keys.indexOf(Some(k))
@@ -56,7 +56,7 @@ class ArrayMap[K: ClassTag, V: ClassTag] private( //> ArrayMap::constructor
 
 }
 
-extension [T](a: Array[T]) def indexOf(elem: T): Int = {    //> Array::indexOf
+extension [T](a: Array[T]) def indexOf(elem: T): Int = {    //> Array::indexOf loc=10
   var i = 0
   while (i < a.length) {
     if (a(i) == elem) {

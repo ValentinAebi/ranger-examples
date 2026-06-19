@@ -8,8 +8,10 @@ hg_group = "group"
 hg_prog = "prog"
 hg_sig_type_cnt = "std"
 hg_sig_cstr_cnt = "csr"
+hg_units_cnt = "unit"
 
 hs_failed = "fail"
+hs_loc = "loc"
 
 hs_sig_ref_cnt = "ref"
 hs_sig_cstr_cnt = "csr"
@@ -32,19 +34,20 @@ liquid_java_excluded_examples = {"ArrayMap", "FilterLessThan"}
 
 groups = {
     "rng": ["Datetime", "FilterLessThan", "MaxPos", "Motivation"],
-    "amap": ["Arraymap"],
+    "amap": ["ArrayMap"],
     "sort": ["Sorting"],
     "ic": ["ic4", "ic5", "ic7", "ic9"],
     "lj": ["lj1", "lj2", "lj3", "lj4"]
 }
 
-general_headers: Final = [hg_group, hg_prog, hg_sig_type_cnt, hg_sig_cstr_cnt]
+general_headers: Final = [hg_group, hg_prog, hg_units_cnt, hg_sig_type_cnt, hg_sig_cstr_cnt]
 per_lang_headers: Final = [
     (hs_failed, {liquid_java_code}),
+    (hs_loc, {licorne_code, scala_code}),
     (hs_sig_ref_cnt, {licorne_code, checker_code, liquid_java_code}),
     (hs_sig_cstr_cnt, {licorne_code, checker_code, liquid_java_code}),
     (hs_aux_annot_cnt, {licorne_code, checker_code, liquid_java_code, scala_code}),
-    (hs_aux_ref_cnt, {licorne_code, checker_code}),
+    (hs_aux_ref_cnt, {licorne_code, checker_code, liquid_java_code}),
     (hs_bypass_cnt, {licorne_code, checker_code}),
     (hs_tn_cnt, {licorne_code, checker_code, liquid_java_code}),
     (hs_fn_cnt, {licorne_code, checker_code, liquid_java_code}),
@@ -52,13 +55,14 @@ per_lang_headers: Final = [
     (hs_tp_cnt, {licorne_code, checker_code, liquid_java_code}),
 ]
 
-excluded_headers = {hs_failed}
+hs_excluded_headers = {hs_failed, hs_tn_cnt}
 
 
 class Entry:
     example_name: str
     module: str
     function: str
+    loc: int = 0
     param_cnt: int = 0
     param_refinements_cnt: int = 0
     param_constraints_expressed_cnt: int = 0
@@ -78,11 +82,6 @@ class Entry:
 
     def uid(self):
         return f"{self.example_name}::{self.module}::{self.function}"
-
-    def __str__(self):
-        return f"{self.uid()} p=(cnt={self.param_cnt},refinements={self.param_refinements_cnt},expressiveness={self.param_constraints_expressed_cnt}/{self.param_constraints_desired_cnt}) " + \
-            f"r=({self.return_type_refinements_cnt},{self.return_type_constraints_expressed_cnt}/{self.return_type_constraints_desired_cnt})) " + \
-            f" bug={self.has_bug} reported={self.reported} aux-annot=({self.auxiliary_annot_cnt},{self.auxiliary_refinements_cnt},{self.auxiliary_constraints_cnt}) bypass={self.bypass_cnt}"
 
 
 def load_entries(dir: str, ext: str) -> Dict[str, Entry]:
@@ -109,14 +108,8 @@ def load_entries(dir: str, ext: str) -> Dict[str, Entry]:
                             .lower())
                         (entry.module, entry.function) = [s.lower() for s in sp[0].split("::")]
                         sp = sp[1:]
-                        if ext == ".scala":
-                            assert len(sp) <= 1, raw_line
-                            if len(sp) == 1:
-                                entry.is_scala = True
-                                m = re.search(r"aux-annot=(\d*)", sp[0])
-                                entry.auxiliary_annot_cnt = int(m.group(1))
-                                sp = sp[1:]
-                        else:
+
+                        if ext != ".scala":
                             m = re.search(r"p=\((\d*),(\d*),(\d*)/(\d*)\)", sp[0])
                             entry.param_cnt = int(m.group(1))
                             entry.param_refinements_cnt = int(m.group(2))
@@ -131,32 +124,47 @@ def load_entries(dir: str, ext: str) -> Dict[str, Entry]:
                                 entry.return_type_constraints_expressed_cnt = int(m.group(2))
                                 entry.return_type_constraints_desired_cnt = int(m.group(3))
                             sp = sp[1:]
-                            aux_annot_tags = [t for t in sp if t.startswith("aux-annot")]
-                            assert len(aux_annot_tags) <= 1
-                            if len(aux_annot_tags) > 0:
-                                m = re.search(r"aux-annot=\((\d*),(\d*),(\d*)\)", aux_annot_tags[0])
-                                entry.auxiliary_annot_cnt = int(m.group(1))
+
+                        aux_annot_tags = [t for t in sp if t.startswith("aux-annot")]
+                        assert len(aux_annot_tags) <= 1
+                        if len(aux_annot_tags) > 0:
+                            m = re.search(r"aux-annot=\((\d*),(\d*),(\d*)\)", aux_annot_tags[0])
+                            if m is None:
+                                m = re.search(r"aux-annot=(\d*)", aux_annot_tags[0])
+                            entry.auxiliary_annot_cnt = int(m.group(1))
+                            if len(m.groups()) > 1:
                                 entry.auxiliary_refinements_cnt = int(m.group(2))
                                 entry.auxiliary_constraints_cnt = int(m.group(3))
-                            bypass_tags = [t for t in sp if t.startswith("bypass")]
-                            assert len(bypass_tags) <= 1, "too many bypass tags"
-                            if len(bypass_tags) > 0:
-                                m = re.search(r"bypass=(\d*)", bypass_tags[0])
-                                entry.bypass_cnt = int(m.group(1))
-                            sp = [t for t in sp if not t.startswith("aux-annot") and not t.startswith("bypass")]
-                            entry.has_bug = "bug" in sp
-                            if entry.has_bug:
-                                sp.remove("bug")
-                            entry.reported = "reported" in sp
-                            if entry.reported:
-                                sp.remove("reported")
-                            entry.tool_failure = "fail" in sp
-                            if entry.tool_failure:
-                                sp.remove("fail")
+                        bypass_tags = [t for t in sp if t.startswith("bypass")]
+                        assert len(bypass_tags) <= 1, "too many bypass tags"
+                        if len(bypass_tags) > 0:
+                            m = re.search(r"bypass=(\d*)", bypass_tags[0])
+                            entry.bypass_cnt = int(m.group(1))
+                        loc_tags = [t for t in sp if t.startswith("loc")]
+                        assert len(loc_tags) <= 1, "too many loc tags"
+                        if len(loc_tags) > 0:
+                            m = re.match(r"loc=(\d*)", loc_tags[0])
+                            entry.loc = int(m.group(1))
+                        if not "liquid-java" in str(dir):
+                            assert entry.loc > 0, "missing loc annotation"
+                        sp = [t for t in sp if
+                              not t.startswith("aux-annot") and not t.startswith("bypass") and not t.startswith("loc")]
+
+                        entry.has_bug = "bug" in sp
+                        if entry.has_bug:
+                            sp.remove("bug")
+                        entry.reported = "reported" in sp
+                        if entry.reported:
+                            sp.remove("reported")
+                        entry.tool_failure = "fail" in sp
+                        if entry.tool_failure:
+                            sp.remove("fail")
+
                         assert len(sp) == 0, f"unknown marker(s): {sp}"
                         assert entry.uid() not in entries, "duplicate uid"
                         entries[entry.uid()] = entry
                     except Exception as e:
+                        print(e, file=sys.stderr)
                         if len(e.args) > 0:
                             raise Exception(e.args[0] + f" (complete line is {raw_line})")
                         else:
@@ -223,6 +231,7 @@ def create_per_example_dict(data: List[Tuple[str, Dict[str, Entry]]]) \
                 hg_sig_type_cnt: sum([e.param_cnt + e.ret_cnt for e in ex_general_data]),
                 hg_sig_cstr_cnt: sum(
                     [e.param_constraints_desired_cnt + e.return_type_constraints_desired_cnt for e in ex_general_data]),
+                hg_units_cnt: sum([1 for e in ex_general_data]),
             }
             example_per_lang_metrics: Dict[str, Dict[str, Any]] = dict([(h, {}) for h, _ in per_lang_headers])
             for lang_id, dic in data:
@@ -231,6 +240,7 @@ def create_per_example_dict(data: List[Tuple[str, Dict[str, Entry]]]) \
                         example_per_lang_metrics[h][lang_id] = ""
                 else:
                     ex_lang_data = [e for (_, e) in dic.items() if e.example_name == ex_low_case]
+                    example_per_lang_metrics[hs_loc][lang_id] = sum([e.loc for e in ex_lang_data])
                     example_per_lang_metrics[hs_sig_ref_cnt][lang_id] = sum(
                         [e.param_refinements_cnt + e.return_type_refinements_cnt for e in ex_lang_data])
                     example_per_lang_metrics[hs_sig_cstr_cnt][lang_id] = sum(
@@ -262,7 +272,7 @@ def create_table(all_data: Dict[str, Tuple[Dict[str, Any], Dict[str, Dict[str, i
             general_metrics, per_lang_metrics = all_data[ex]
             row = [general_metrics[h] for h in general_headers]
             for h, h_langs in per_lang_headers:
-                if h in excluded_headers:
+                if h in hs_excluded_headers:
                     continue
                 for lang_id in languages:
                     if lang_id not in h_langs:
@@ -277,7 +287,7 @@ def write_csv(table: List[List[str]], languages: List[str]) -> None:
     with open("./out/table.csv", "w", newline="") as f:
         wr = csv.writer(f)
         header = general_headers + [f"{h} ({l})" for h, h_langs in per_lang_headers for l in
-                                    languages if l in h_langs and not h in excluded_headers]
+                                    languages if l in h_langs and not h in hs_excluded_headers]
         wr.writerow(header)
         for row in table:
             wr.writerow(row)
@@ -288,7 +298,7 @@ def mk_latex_table(table: List[List[str]], languages: List[str]) -> str:
     for _ in general_headers:
         col_settings += "c "
     for h, h_langs in per_lang_headers:
-        if h not in excluded_headers:
+        if h not in hs_excluded_headers:
             col_settings += "| "
             for _ in range(len(h_langs)):
                 col_settings += "c "
@@ -297,9 +307,9 @@ def mk_latex_table(table: List[List[str]], languages: List[str]) -> str:
     rs += "\\toprule\n"
     header_1 = ([textsc(h) for h in general_headers]
                 + ["\\multicolumn{" + str(len(h_langs)) + "}{c}{" + textsc(h) + "}" for h, h_langs in per_lang_headers
-                   if h not in excluded_headers])
+                   if h not in hs_excluded_headers])
     header_2 = ["" for _ in general_headers] + [textsc(l) for h, h_langs in per_lang_headers for l in
-                                                languages if l in h_langs and h not in excluded_headers]
+                                                languages if l in h_langs and h not in hs_excluded_headers]
 
     def mk_row(row: List[Any]):
         row_str = ""

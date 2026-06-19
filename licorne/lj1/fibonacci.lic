@@ -3,7 +3,7 @@ typealias Nat = [0..]
 
 object Fibonacci {
 
-    fn fib_original(n: Nat) -> Nat & [n..] {                //> Fibonacci::fib_original p=(1,1,1/1) r=(2,2/2) BUG REPORTED
+    fn fib_original(n: Nat) -> Nat & [n..] {                //> Fibonacci::fib_original p=(1,1,1/1) r=(2,2/2) BUG REPORTED loc=7
         if (n <= 1) {
             return 0;                                       // ERROR: violates [n..]
         } else {
@@ -11,7 +11,7 @@ object Fibonacci {
         }
     }
 
-    fn fib_base_case_fixed(n: Nat) -> Nat & [n..] {         //> Fibonacci::fib_base_case_fixed p=(1,1,1/1) r=(2,2/2) BUG REPORTED
+    fn fib_base_case_fixed(n: Nat) -> Nat & [n..] {         //> Fibonacci::fib_base_case_fixed p=(1,1,1/1) r=(2,2/2) BUG REPORTED loc=7
         if (n <= 1) {
             return n;                                                       // OK
         } else {

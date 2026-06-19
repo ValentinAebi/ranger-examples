@@ -6,7 +6,7 @@ import org.checkerframework.checker.index.qual.LessThan;
 
 public class FilterLessThan {
 
-    static List<@LessThan("#1") Integer> filterLessThan_adHoc_correct(int a, List<Integer> ls) {        //> FilterLessThan::filterLessThan_adHoc_correct p=(2,0,0/0) r=(1,1/1) aux-annot=(1,1,1) REPORTED
+    static List<@LessThan("#1") Integer> filterLessThan_adHoc_correct(int a, List<Integer> ls) {        //> FilterLessThan::filterLessThan_adHoc_correct p=(2,0,0/0) r=(1,1/1) aux-annot=(1,1,1) REPORTED loc=12
         List<@LessThan("a") Integer> revFiltered = new Nil<>();
         var rem = ls;
         while (rem instanceof Cons<Integer> cons) {
@@ -19,7 +19,7 @@ public class FilterLessThan {
         return reverse(revFiltered);
     }
 
-    static List<@LessThan("#1") Integer> filterLessThan_adHoc_buggy(int a, List<Integer> ls) {          //> FilterLessThan::filterLessThan_adHoc_buggy p=(2,0,0/0) r=(1,1/1) aux-annot=(1,1,1) BUG REPORTED
+    static List<@LessThan("#1") Integer> filterLessThan_adHoc_buggy(int a, List<Integer> ls) {          //> FilterLessThan::filterLessThan_adHoc_buggy p=(2,0,0/0) r=(1,1/1) aux-annot=(1,1,1) BUG REPORTED loc=12
         List<@LessThan("a") Integer> revFiltered = new Nil<>();
         var rem = ls;
         while (rem instanceof Cons<Integer> cons) {
@@ -32,11 +32,11 @@ public class FilterLessThan {
         return reverse(revFiltered);
     }
 
-    static List<@LessThan("#1") Integer> filterLessThan_functional_correct(int a, List<Integer> ls) {           //> FilterLessThan::filterLessThan_functional_correct p=(2,0,0/0) r=(1,1/1)
+    static List<@LessThan("#1") Integer> filterLessThan_functional_correct(int a, List<Integer> ls) {           //> FilterLessThan::filterLessThan_functional_correct p=(2,0,0/0) r=(1,1/1) loc=3
         return List.fromStream(ls.stream().filter((elem) -> elem < a));
     }
 
-    static List<@LessThan("#1") Integer> filterLessThan_functional_buggy(int a, List<Integer> ls) {             //> FilterLessThan::filterLessThan_functional_buggy p=(2,0,0/0) r=(1,1/1) BUG
+    static List<@LessThan("#1") Integer> filterLessThan_functional_buggy(int a, List<Integer> ls) {             //> FilterLessThan::filterLessThan_functional_buggy p=(2,0,0/0) r=(1,1/1) BUG loc=3
         return List.fromStream(ls.stream().filter((elem) -> elem <= a));    // ERROR: should be elem < a
     }
 

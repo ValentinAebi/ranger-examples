@@ -1,16 +1,16 @@
 
 typealias CarAcceptableYears = [1801 ..< 2050]
 
-class Car(                          //> Car::constructor p=(2,2,3/3) r=none
+class Car(                          //> Car::constructor p=(2,2,3/3) r=none loc=4
     var year: CarAcceptableYears,
     var seats: [0..]
 ) {
 
-    fn setYear(this, year: CarAcceptableYears) {    //> Car::setYear p=(1,1,2/2) r=none
+    fn setYear(this, year: CarAcceptableYears) {    //> Car::setYear p=(1,1,2/2) r=none loc=3
         this.year = year;
     }
 
-    fn getYear(this) -> CarAcceptableYears = year   //> Car::getYear p=(0,0,0/0) r=(1,2/2)
+    fn getYear(this) -> CarAcceptableYears = year   //> Car::getYear p=(0,0,0/0) r=(1,2/2) loc=1
 
 }
 

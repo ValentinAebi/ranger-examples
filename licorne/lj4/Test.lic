@@ -3,7 +3,7 @@ object Test {
 
     fn getYear() -> [2021..] = 2024
 
-    fn test_correct() {     //> Test::test_correct p=(0,0,0/0) r=none
+    fn test_correct() {     //> Test::test_correct p=(0,0,0/0) r=none loc=7
         val a = 1998;
         val c = Cars.newCarWithDefaultValues();
         c.setYear(a);
@@ -12,7 +12,7 @@ object Test {
         val k: [2021..] = getYear();
     }
 
-    fn test_buggy() {       //> Test::test_buggy p=(0,0,0/0) r=none BUG REPORTED
+    fn test_buggy() {       //> Test::test_buggy p=(0,0,0/0) r=none BUG REPORTED loc=7
         val a = 998;
         val c = Cars.newCarWithDefaultValues();
         c.setYear(a);        // ERROR: bad value

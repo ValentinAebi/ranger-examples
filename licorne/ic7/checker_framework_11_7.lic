@@ -6,7 +6,7 @@ typealias Length = [0..]
 
 object IC7 {
 
-    fn removeSubstring_correct_1(original: String, removed: String) -> String {     //> IC7::removeSubstring_correct_1 p=(2,0,0/0) r=(0,0/0)
+    fn removeSubstring_correct_1(original: String, removed: String) -> String {     //> IC7::removeSubstring_correct_1 p=(2,0,0/0) r=(0,0/0) loc=10
         val i = indexOf(original, removed);
         if (i != -1) {    // checking using !=
             return concat(
@@ -17,7 +17,7 @@ object IC7 {
         return original;
     }
 
-    fn removeSubstring_correct_2(original: String, removed: String) -> String {     //> IC7::removeSubstring_correct_2 p=(2,0,0/0) r=(0,0/0)
+    fn removeSubstring_correct_2(original: String, removed: String) -> String {     //> IC7::removeSubstring_correct_2 p=(2,0,0/0) r=(0,0/0) loc=10
         val i = indexOf(original, removed);
         if (i > -1) {      // <- checking using >
             return concat(
@@ -28,7 +28,7 @@ object IC7 {
         return original;
     }
 
-    fn removeSubstring_buggy(original: String, removed: String) -> String {         //> IC7::removeSubstring_buggy p=(2,0,0/0) r=(0,0/0) BUG REPORTED
+    fn removeSubstring_buggy(original: String, removed: String) -> String {         //> IC7::removeSubstring_buggy p=(2,0,0/0) r=(0,0/0) BUG REPORTED loc=7
         val i = indexOf(original, removed);
         // ERROR: missing check for i == -1
         return concat(

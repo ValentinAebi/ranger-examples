@@ -10,7 +10,7 @@ public class Test {
         return 2024;
     }
 
-    public static void test_correct() {     //> Test::test_correct p=(0,0,0/0) r=none
+    public static void test_correct() {     //> Test::test_correct p=(0,0,0/0) r=none loc=9
         int a = 1998;
         Car c = new Car();
         c.setYear(a);
@@ -22,7 +22,7 @@ public class Test {
         int k = getYear();
     }
 
-    public static void test_buggy() {       //> Test::test_buggy p=(0,0,0/0) r=none BUG REPORTED
+    public static void test_buggy() {       //> Test::test_buggy p=(0,0,0/0) r=none BUG REPORTED loc=9
         int a = 998;
         Car c = new Car();
         c.setYear(a);               // ERROR: bad value

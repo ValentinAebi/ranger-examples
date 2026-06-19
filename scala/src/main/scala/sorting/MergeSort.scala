@@ -4,13 +4,13 @@ import scala.reflect.ClassTag
 import java.lang.System
 
 
-def sort[T: ClassTag](array: Array[T], lessThan: (T, T) => Boolean): Unit = {   //> MergeSort::sort
+def sort[T: ClassTag](array: Array[T], lessThan: (T, T) => Boolean): Unit = {   //> MergeSort::sort loc=4
   val tmpArray = new Array[T](array.length)
   doSort(array, tmpArray, lessThan, 0, array.length - 1)
 }
 
 private def doSort[T](array: Array[T], tmpArray: Array[T],
-                      lt: (T, T) => Boolean, left: Int, right: Int): Unit = {   //> MergeSort::doSort
+                      lt: (T, T) => Boolean, left: Int, right: Int): Unit = {   //> MergeSort::doSort loc=9
   if (left < right) {
     val mid = (left + right) / 2;
     doSort(array, tmpArray, lt, left, mid);
@@ -19,7 +19,7 @@ private def doSort[T](array: Array[T], tmpArray: Array[T],
   }
 }
 
-private def merge[T](array: Array[T], tmpArray: Array[T], lt: (T, T) => Boolean,  //> MergeSort::merge
+private def merge[T](array: Array[T], tmpArray: Array[T], lt: (T, T) => Boolean,  //> MergeSort::merge loc=22
                      left: Int, mid: Int, right: Int): Unit = {
   require(left < right)   // excluded from l.o.c. count
 
