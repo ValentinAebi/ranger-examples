@@ -2,7 +2,49 @@ import csv
 import os
 import re
 import sys
-from typing import Dict, List, Any, Tuple
+from typing import Dict, List, Any, Tuple, Final
+
+#@formatter:off
+
+hg_prog = "prog"
+hg_sig_type_cnt = "std"
+hg_sig_cstr_cnt = "csr"
+
+hs_sig_ref_cnt = "ref"
+hs_sig_cstr_cnt = "csr"
+hs_tn_cnt = "tn"
+hs_fn_cnt = "fn"
+hs_fp_cnt = "fp"
+hs_tp_cnt = "tp"
+hs_aux_annot_cnt = "aux"
+hs_aux_ref_cnt = "auxr"
+hs_bypass_cnt = "cas"
+hs_failed = "fail"
+
+
+licorne_code = "R"
+checker_code = "C"
+liquid_java_code = "L"
+scala_code = "S"
+
+liquid_java_excluded_examples = {"arraymap", "filterlessthan"}
+
+# @formatter:on
+
+
+general_headers: Final = [hg_prog, hg_sig_type_cnt, hg_sig_cstr_cnt]
+per_lang_headers: Final = [
+    (hs_failed, {liquid_java_code}),
+    (hs_sig_ref_cnt, {licorne_code, checker_code, liquid_java_code}),
+    (hs_sig_cstr_cnt, {licorne_code, checker_code, liquid_java_code}),
+    (hs_tn_cnt, {licorne_code, checker_code, liquid_java_code}),
+    (hs_fn_cnt, {licorne_code, checker_code, liquid_java_code}),
+    (hs_fp_cnt, {licorne_code, checker_code, liquid_java_code}),
+    (hs_tp_cnt, {licorne_code, checker_code, liquid_java_code}),
+    (hs_aux_annot_cnt, {licorne_code, checker_code, liquid_java_code, scala_code}),
+    (hs_aux_ref_cnt, {licorne_code, checker_code}),
+    (hs_bypass_cnt, {licorne_code, checker_code}),
+]
 
 
 class Entry:
@@ -13,6 +55,7 @@ class Entry:
     param_refinements_cnt: int = 0
     param_constraints_expressed_cnt: int = 0
     param_constraints_desired_cnt: int = 0
+    ret_cnt: int = 0
     return_type_refinements_cnt: int = 0
     return_type_constraints_expressed_cnt: int = 0
     return_type_constraints_desired_cnt: int = 0
@@ -74,6 +117,7 @@ def load_entries(dir: str, ext: str) -> Dict[str, Entry]:
                             sp = sp[1:]
                             assert sp[0].startswith("r="), raw_line
                             if sp[0][2:] != "none":
+                                entry.ret_cnt = 1
                                 m = re.search(r"r=\((\d*),(\d*)/(\d*)\)", sp[0])
                                 entry.return_type_refinements_cnt = int(m.group(1))
                                 entry.return_type_constraints_expressed_cnt = int(m.group(2))
@@ -125,12 +169,15 @@ def compare(data1: dict[str, Entry], code1: str, data2: dict[str, Entry], code2:
         if not uid in data2:
             print(f"missing in {code2} data: ", uid)
             continue
-        if code1 == "scala" or code2 == "scala":
+        if code1 == scala_code or code2 == scala_code:
             continue
         entry1 = data1[uid]
         entry2 = data2[uid]
         if entry1.param_cnt != entry2.param_cnt:
             print("difference in parameter count: ", uid, file=sys.stderr)
+            diff_cnt += 1
+        if entry1.ret_cnt != entry2.ret_cnt:
+            print("difference in return count: ", uid, file=sys.stderr)
             diff_cnt += 1
         if entry1.param_constraints_desired_cnt != entry2.param_constraints_desired_cnt:
             print("difference in desired parameter constraints: ", uid, file=sys.stderr)
@@ -154,43 +201,116 @@ def mk_lang_data(e: Entry) -> List[Any]:
             e.auxiliary_refinements_cnt, e.auxiliary_constraints_cnt, e.bypass_cnt]
 
 
-def create_examples_table(data: List[Tuple[str, Dict[str, Entry]]]) -> List[List[Any]]:
-    general_headers = ["prog", "#p", "#p-cstr", "#r-cstr"]
-    per_lang_headers = ["#p-ref", "#p-cstr", "#r-ref",
-                        "#r-cstr", "TN", "FN", "FP", "TP", "#aux-an", "#aux-ref",
-                        "#aux-cstr", "#bypass", "failed"]
-
-    def mk_lang_header(lang_code: str):
-        return [f"{lang_code}: {h}" for h in per_lang_headers]
-
+def create_per_example_dict(data: List[Tuple[str, Dict[str, Entry]]]) \
+        -> Dict[str, Tuple[Dict[str, Any], Dict[str, Dict[str, Any]]]]:
     all_examples = list(set([e.example_name for (_, e) in (data[0])[1].items()]))
     all_examples.sort()
-    headers = general_headers + [h for (lang_id, _) in data for h in mk_lang_header(lang_id)]
-    table = [headers]
+    per_example: Dict[str, Tuple[Dict[str, Any], Dict[str, Dict[str, int]]]] = {}  # example -> metric -> language
     for ex in all_examples:
         ex_general_data = [e for (_, e) in data[0][1].items() if e.example_name == ex]
-        p = sum([e.param_cnt for e in ex_general_data])
-        p_c = sum([e.param_constraints_desired_cnt for e in ex_general_data])
-        r_c = sum([e.return_type_constraints_desired_cnt for e in ex_general_data])
-        row = [ex, p, p_c, r_c]
+        example_general_metrics = {
+            hg_prog: ex,
+            hg_sig_type_cnt: sum([e.param_cnt + e.ret_cnt for e in ex_general_data]),
+            hg_sig_cstr_cnt: sum(
+                [e.param_constraints_desired_cnt + e.return_type_constraints_desired_cnt for e in ex_general_data]),
+        }
+        example_per_lang_metrics: Dict[str, Dict[str, Any]] = dict([(h, {}) for h, _ in per_lang_headers])
         for lang_id, dic in data:
-            ex_lang_data = [e for (_, e) in dic.items() if e.example_name == ex]
-            p_ref = sum([e.param_refinements_cnt for e in ex_lang_data])
-            p_c = sum([e.param_constraints_expressed_cnt for e in ex_lang_data])
-            r_ref = sum([e.return_type_refinements_cnt for e in ex_lang_data])
-            r_c = sum([e.return_type_constraints_expressed_cnt for e in ex_lang_data])
-            tn = len([e for e in ex_lang_data if not e.has_bug and not e.reported])
-            fn = len([e for e in ex_lang_data if e.has_bug and not e.reported])
-            fp = len([e for e in ex_lang_data if not e.has_bug and e.reported])
-            tp = len([e for e in ex_lang_data if e.has_bug and e.reported])
-            aux_annot = sum([e.auxiliary_annot_cnt for e in ex_lang_data])
-            aux_ref = sum([e.auxiliary_refinements_cnt for e in ex_lang_data])
-            aux_c = sum([e.auxiliary_constraints_cnt for e in ex_lang_data])
-            bypass = sum([e.bypass_cnt for e in ex_lang_data])
-            failure = any([e.tool_failure for e in ex_lang_data])
-            row += [p_ref, p_c, r_ref, r_c, tn, fn, fp, tp, aux_annot, aux_ref, aux_c, bypass, failure]
+            if lang_id == liquid_java_code and ex in liquid_java_excluded_examples:
+                for h, _ in per_lang_headers:
+                    example_per_lang_metrics[h][lang_id] = ""
+            else:
+                ex_lang_data = [e for (_, e) in dic.items() if e.example_name == ex]
+                example_per_lang_metrics[hs_sig_ref_cnt][lang_id] = sum(
+                    [e.param_refinements_cnt + e.return_type_refinements_cnt for e in ex_lang_data])
+                example_per_lang_metrics[hs_sig_cstr_cnt][lang_id] = sum(
+                    [e.param_constraints_expressed_cnt + e.return_type_constraints_expressed_cnt for e in ex_lang_data])
+                example_per_lang_metrics[hs_tn_cnt][lang_id] = len(
+                    [e for e in ex_lang_data if not e.has_bug and not e.reported])
+                example_per_lang_metrics[hs_fn_cnt][lang_id] = len(
+                    [e for e in ex_lang_data if e.has_bug and not e.reported])
+                example_per_lang_metrics[hs_fp_cnt][lang_id] = len(
+                    [e for e in ex_lang_data if not e.has_bug and e.reported])
+                example_per_lang_metrics[hs_tp_cnt][lang_id] = len(
+                    [e for e in ex_lang_data if e.has_bug and e.reported])
+                example_per_lang_metrics[hs_aux_annot_cnt][lang_id] = sum([e.auxiliary_annot_cnt for e in ex_lang_data])
+                example_per_lang_metrics[hs_aux_ref_cnt][lang_id] = sum(
+                    [e.auxiliary_refinements_cnt for e in ex_lang_data])
+                example_per_lang_metrics[hs_bypass_cnt][lang_id] = sum([e.bypass_cnt for e in ex_lang_data])
+                example_per_lang_metrics[hs_failed][lang_id] = any([e.tool_failure for e in ex_lang_data])
+        per_example[ex] = (example_general_metrics, example_per_lang_metrics)
+    return per_example
+
+
+def create_table(all_data: Dict[str, Tuple[Dict[str, Any], Dict[str, Dict[str, int]]]], languages: List[str]) \
+        -> List[List[str]]:
+    all_examples = list(all_data.keys())
+    all_examples.sort()
+    assert len(all_examples) == len(set(all_examples)) == 14
+    table = []
+    for ex in all_examples:
+        general_metrics, per_lang_metrics = all_data[ex]
+        row = [general_metrics[h] for h in general_headers]
+        for h, h_langs in per_lang_headers:
+            if h == hs_failed:
+                continue
+            for lang_id in languages:
+                if lang_id not in h_langs:
+                    continue
+                row.append("F" if per_lang_metrics[hs_failed][lang_id] else per_lang_metrics[h][lang_id])
         table.append(row)
     return table
+
+
+def write_csv(table: List[List[str]], languages: List[str]) -> None:
+    os.makedirs("out", exist_ok=True)
+    with open("./out/table.csv", "w", newline="") as f:
+        wr = csv.writer(f)
+        header = general_headers + [f"{h} ({l})" for h, h_langs in per_lang_headers for l in
+                                    languages if l in h_langs and h != hs_failed]
+        wr.writerow(header)
+        for row in table:
+            wr.writerow(row)
+
+
+def mk_latex_table(table: List[List[str]], languages: List[str]) -> str:
+    def mk_row(row: List[Any]):
+        row_str = ""
+        first_col = True
+        for cell in row:
+            if not first_col:
+                row_str += " & "
+            cell = str(cell)
+            row_str += str("x" if cell == "True" else "" if cell == "False" else cell)
+            first_col = False
+        row_str += "\\\\\n"
+        return row_str
+
+    col_settings = "| "
+    for h in general_headers:
+        col_settings += "c "
+    for h, h_langs in per_lang_headers:
+        if h != hs_failed:
+            col_settings += "| "
+            for _ in range(len(h_langs)):
+                col_settings += "c "
+    col_settings += "|"
+    rs = "\\begin{tabular}{ " + col_settings + " }\n"
+    rs += "\\toprule\n"
+    header_1 = (["\\textsc{" + h + "}" for h in general_headers]
+                + ["\\multicolumn{" + str(len(h_langs)) + "}{c}{\\textsc{" + h + "}}" for h, h_langs in per_lang_headers
+                   if h != hs_failed])
+    rs += mk_row(header_1)
+    header_2 = ["" for _ in general_headers] + ["\\textsc{" + l + "}" for h, h_langs in per_lang_headers for l in
+                                                languages if l in h_langs and h != hs_failed]
+    rs += mk_row(header_2)
+    rs += "\\midrule\n"
+    for row in table:
+        rs += mk_row(row)
+    rs += "\\midrule\n"
+    rs += "\\bottomrule\n"
+    rs += "\\end{tabular}"
+    return rs
 
 
 def main():
@@ -198,16 +318,16 @@ def main():
     checker_framework_data = load_entries("../java-checker-framework", ext=".java")
     liquid_java_data = load_entries("../liquid-java", ext=".java")
     scala_data = load_entries("../scala", ext=".scala")
-    compare(checker_framework_data, "jcf", licorne_data, "lic")
-    compare(liquid_java_data, "lj", licorne_data, "lic")
-    compare(scala_data, "scala", licorne_data, "lic")
-    table = create_examples_table(
-        [("lic", licorne_data), ("jcf", checker_framework_data), ("lj", liquid_java_data), ("scala", scala_data)])
-    os.makedirs("out", exist_ok=True)
-    with open("./out/table.csv", "w", newline="") as f:
-        wr = csv.writer(f)
-        for row in table:
-            wr.writerow(row)
+    compare(checker_framework_data, checker_code, licorne_data, licorne_code)
+    compare(liquid_java_data, liquid_java_code, licorne_data, licorne_code)
+    compare(scala_data, scala_code, licorne_data, licorne_code)
+    per_ex = create_per_example_dict(
+        [(licorne_code, licorne_data), (checker_code, checker_framework_data), (liquid_java_code, liquid_java_data),
+         (scala_code, scala_data)])
+    languages = [licorne_code, checker_code, liquid_java_code, scala_code]
+    table = create_table(per_ex, languages)
+    print(mk_latex_table(table, languages))
+    write_csv(table, languages)
 
 
 if __name__ == "__main__":
