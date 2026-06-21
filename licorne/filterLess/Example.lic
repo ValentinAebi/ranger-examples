@@ -5,9 +5,9 @@ import lists.Cons;
 import lists.Lists.*;
 
 
-object FilterLessThan {
+object FilterLess {
 
-    fn filterLessThan_adHoc_correct(a: Int, var ls: List[Int]) -> List[[..<a]] {        //> FilterLessThan::filterLessThan_adHoc_correct p=(2,0,0/0) r=(1,1/1) loc=10
+    fn filterLessThan_adHoc_correct(a: Int, var ls: List[Int]) -> List[[..<a]] {        //> FilterLess::filterLessThan_adHoc_correct p=(2,0,0/0) r=(1,1/1) loc=10
         var filteredReversed = new Nil();
         while ls is Cons {
             if ls.first() < a {
@@ -18,7 +18,7 @@ object FilterLessThan {
         return reverse(filteredReversed);
     }
 
-    fn filterLessThan_adHoc_buggy(a: Int, var ls: List[Int]) -> List[[..<a]] {          //> FilterLessThan::filterLessThan_adHoc_buggy p=(2,0,0/0) r=(1,1/1) BUG REPORTED loc=10
+    fn filterLessThan_adHoc_buggy(a: Int, var ls: List[Int]) -> List[[..<a]] {          //> FilterLess::filterLessThan_adHoc_buggy p=(2,0,0/0) r=(1,1/1) BUG REPORTED loc=10
         var filteredReversed = new Nil();
         while ls is Cons {
             if ls.first() <= a {  // ERROR: should be <
@@ -29,10 +29,10 @@ object FilterLessThan {
         return reverse(filteredReversed);
     }
 
-    fn filterLessThan_functional_correct(a: Int, ls: List[Int]) -> List[[..<a]] =       //> FilterLessThan::filterLessThan_functional_correct p=(2,0,0/0) r=(1,1/1) loc=2
+    fn filterLessThan_functional_correct(a: Int, ls: List[Int]) -> List[[..<a]] =       //> FilterLess::filterLessThan_functional_correct p=(2,0,0/0) r=(1,1/1) loc=2
         filter(ls, fn (elem) -> elem < a)
 
-    fn filterLessThan_functional_buggy(a: Int, ls: List[Int]) -> List[[..<a]] =         //> FilterLessThan::filterLessThan_functional_buggy p=(2,0,0/0) r=(1,1/1) BUG REPORTED loc=2
+    fn filterLessThan_functional_buggy(a: Int, ls: List[Int]) -> List[[..<a]] =         //> FilterLess::filterLessThan_functional_buggy p=(2,0,0/0) r=(1,1/1) BUG REPORTED loc=2
         filter(ls, fn (elem) -> elem <= a)  // ERROR: should be elem < a
 
 }

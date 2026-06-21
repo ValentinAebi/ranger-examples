@@ -8,16 +8,16 @@ hg_group = "group"
 hg_prog = "prog"
 hg_sig_type_cnt = "std"
 hg_sig_cstr_cnt = "csr"
-hg_units_cnt = "unit"
+hg_units_cnt = "un"
 
 hs_failed = "fail"
 hs_loc = "loc"
 
-hs_sig_ref_cnt = "ref"
-hs_sig_cstr_cnt = "csr"
+hs_sig_ref_cnt = "refin"
+hs_sig_cstr_cnt = "constr"
 
 hs_aux_annot_cnt = "aux"
-hs_aux_ref_cnt = "auxr"
+hs_aux_ref_cnt = "aux-ref"
 hs_bypass_cnt = "cas"
 
 hs_tn_cnt = "tn"
@@ -30,10 +30,10 @@ checker_code = "C"
 liquid_java_code = "L"
 scala_code = "S"
 
-liquid_java_excluded_examples = {"ArrayMap", "FilterLessThan"}
+liquid_java_excluded_examples = {"ArrayMap", "FilterLess"}
 
 groups = {
-    "rng": ["Datetime", "FilterLessThan", "MaxPos", "Motivation"],
+    "rng": ["DateTime", "FilterLess", "MaxPos", "Motivation"],
     "amap": ["ArrayMap"],
     "sort": ["Sorting"],
     "ic": ["ic4", "ic5", "ic7", "ic9"],
@@ -49,10 +49,10 @@ per_lang_headers: Final = [
     (hs_aux_annot_cnt, {licorne_code, checker_code, liquid_java_code, scala_code}),
     (hs_aux_ref_cnt, {licorne_code, checker_code, liquid_java_code}),
     (hs_bypass_cnt, {licorne_code, checker_code}),
-    (hs_tn_cnt, {licorne_code, checker_code, liquid_java_code}),
-    (hs_fn_cnt, {licorne_code, checker_code, liquid_java_code}),
-    (hs_fp_cnt, {licorne_code, checker_code, liquid_java_code}),
     (hs_tp_cnt, {licorne_code, checker_code, liquid_java_code}),
+    (hs_fp_cnt, {licorne_code, checker_code, liquid_java_code}),
+    (hs_fn_cnt, {licorne_code, checker_code, liquid_java_code}),
+    (hs_tn_cnt, {licorne_code, checker_code, liquid_java_code}),
 ]
 
 hs_excluded_headers = {hs_failed, hs_tn_cnt}
@@ -224,9 +224,8 @@ def create_per_example_dict(data: List[Tuple[str, Dict[str, Entry]]]) \
         for ex_full_case in group:
             ex_low_case = ex_full_case.lower()
             ex_general_data = [e for (_, e) in data[0][1].items() if e.example_name == ex_low_case]
-            group = group_id
             example_general_metrics = {
-                hg_group: group,
+                hg_group: group_id,
                 hg_prog: ex_full_case,
                 hg_sig_type_cnt: sum([e.param_cnt + e.ret_cnt for e in ex_general_data]),
                 hg_sig_cstr_cnt: sum(
