@@ -1,4 +1,4 @@
-package org.example.filterlessthan;
+package org.example.filterless;
 
 import java.util.stream.Stream;
 
