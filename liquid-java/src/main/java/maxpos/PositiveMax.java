@@ -2,10 +2,10 @@ package maxpos;
 
 import liquidjava.specification.Refinement;
 
-
 public class PositiveMax {
     
-    /* public static @Refinement("_ >= 0") int maxPos_correct(int[] a) {   //> PositiveMax::maxPos_correct p=(1,0,0/0) r=(1,1/1) FAIL
+    // @Refinement("_ >= 0") causes crash
+    public static int maxPos_correct(int[] a) {   //> PositiveMax::maxPos_correct p=(1,0,0/0) r=none
         int k = 0;
         int max = 0;
         while (k < a.length) {
@@ -18,7 +18,8 @@ public class PositiveMax {
         return max;
     }
 
-    public static @Refinement("_ >= 0") int maxPos_buggy(int[] a) {   //> PositiveMax::maxPos_buggy p=(1,0,0/0) r=(1,1/1) BUG FAIL
+    // @Refinement("_ >= 0") causes crash
+    public static int maxPos_buggy(int[] a) {   //> PositiveMax::maxPos_buggy p=(1,0,0/0) r=none BUG
         int k = 0;
         int max = 0;
         while (k < a.length) {
@@ -31,7 +32,13 @@ public class PositiveMax {
         return max;
     }
 
-    public static @Refinement("_ >= 0") int maxPos_moreComplex_correct(int[] a, @Refinement("0 <= _ && - < a.length") int start, @Refinement("_ >= 0") int incEven, @Refinement("_ >= 0") int incOdd) {    //> PositiveMax::maxPos_moreComplex_correct p=(4,3,4/4) r=(1,1/1) FAIL
+    // @Refinement("_ >= 0") causes crash
+    public static int maxPos_moreComplex_correct(
+        int[] a,
+        @Refinement("0 <= _ && _ < length(a)") int start,
+        @Refinement("_ > 0") int incEven,
+        @Refinement("_ > 0") int incOdd
+    ) {    //> PositiveMax::maxPos_moreComplex_correct p=(4,3,3/3) r=none
         int k = 0;
         int max = start;
         while (k < a.length) {
@@ -48,7 +55,13 @@ public class PositiveMax {
         return max;
     }
 
-    public static @Refinement("_ >= 0") int maxPos_moreComplex_buggy(int[] a, @Refinement("0 <= _ && - < a.length") int start, @Refinement("_ >= 0") int incEven, int incOdd) {    //> PositiveMax::maxPos_moreComplex_buggy p=(4,2,3/3) r=(1,1/1) BUG FAIL
+    // @Refinement("_ >= 0") causes crash
+    public static int maxPos_moreComplex_buggy(
+        int[] a,
+        @Refinement("0 <= _ && _ < length(a)") int start,
+        @Refinement("_ > 0") int incEven,
+        int incOdd
+    ) {    //> PositiveMax::maxPos_moreComplex_buggy p=(4,2,2/2) r=none BUG
         int k = 0;
         int max = start;
         while (k < a.length) {
@@ -63,6 +76,5 @@ public class PositiveMax {
             }
         };
         return max;
-    } */
-
+    }
 }
