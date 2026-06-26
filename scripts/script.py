@@ -42,14 +42,15 @@ groups = {
 }
 
 on_the_fly_ex_renaming = {
-    "ic4" : "thirdelem",
-    "ic5" : "arrayless",
-    "ic7" : "remstring",
-    "ic9" : "arraywrap",
-    "lj1" : "fibonacci",
-    "lj2" : "sum",
-    "lj3" : "absdiv",
-    "lj4" : "cars"
+    "Motivation" : "Decoder",
+    "ic4" : "ThirdElem",
+    "ic5" : "ArrayLess",
+    "ic7" : "RemString",
+    "ic9" : "ArrayWrap",
+    "lj1" : "Fibonacci",
+    "lj2" : "Sum",
+    "lj3" : "AbsDiv",
+    "lj4" : "Car"
 }
 
 general_headers: Final = [hg_group, hg_prog, hg_units_cnt, hg_bugs_cnt, hg_sig_type_cnt, hg_sig_cstr_cnt]
@@ -364,7 +365,6 @@ def mk_latex_table(in_table: List[List[str]], languages: List[str]) -> str:
             elif j == 1 and i != len(in_table) - 1:
                 if cell in on_the_fly_ex_renaming:
                     cell = on_the_fly_ex_renaming[cell]
-                cell = cell[0].upper() + cell[1:]
                 cell = "\\pex{" + cell + "}"
             out_row.append(cell)
         out_table.append(out_row)
