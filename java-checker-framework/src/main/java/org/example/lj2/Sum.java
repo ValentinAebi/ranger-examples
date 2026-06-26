@@ -5,7 +5,7 @@ import org.checkerframework.checker.index.qual.NonNegative;
 
 public class Sum {
 
-    public static @NonNegative int sum_original(int n) {        //> Sum::sum_original p=(1,0,0/0) r=(1,1/2) BUG loc=8  --  the Index Checker cannot express @GreaterOrEq("n")
+    public static @NonNegative int sum_original(int n) {        //> Sum::sum_original p=(1,0,0/0) r=(1,1/2) loc=8  --  the Index Checker cannot express @GreaterOrEq("n"), so we don't consider this unit as bug
         if (n <= 1)
             return 0;   // ERROR: this error cannot be detected by the Checker Framework since the correctness condition sum(n) >= n cannot be expressed
         else {

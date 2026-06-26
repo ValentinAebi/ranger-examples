@@ -9,6 +9,7 @@ hg_prog = "prog"
 hg_sig_type_cnt = "std"
 hg_sig_cstr_cnt = "csr"
 hg_units_cnt = "un"
+hg_bugs_cnt = "b"
 
 hs_failed = "fail"
 hs_loc = "loc"
@@ -40,7 +41,18 @@ groups = {
     "lj": ["lj1", "lj2", "lj3", "lj4"]
 }
 
-general_headers: Final = [hg_group, hg_prog, hg_units_cnt, hg_sig_type_cnt, hg_sig_cstr_cnt]
+on_the_fly_ex_renaming = {
+    "ic4" : "thirdelem",
+    "ic5" : "arrayless",
+    "ic7" : "remstring",
+    "ic9" : "arraywrap",
+    "lj1" : "fibonacci",
+    "lj2" : "sum",
+    "lj3" : "absdiv",
+    "lj4" : "cars"
+}
+
+general_headers: Final = [hg_group, hg_prog, hg_units_cnt, hg_bugs_cnt, hg_sig_type_cnt, hg_sig_cstr_cnt]
 per_lang_headers: Final = [
     (hs_failed, {liquid_java_code}),
     (hs_loc, {licorne_code, scala_code}),
@@ -51,11 +63,13 @@ per_lang_headers: Final = [
     (hs_bypass_cnt, {licorne_code, checker_code}),
     (hs_tp_cnt, {licorne_code, checker_code, liquid_java_code}),
     (hs_fp_cnt, {licorne_code, checker_code, liquid_java_code}),
-    (hs_fn_cnt, {licorne_code, checker_code, liquid_java_code}),
     (hs_tn_cnt, {licorne_code, checker_code, liquid_java_code}),
+    (hs_fn_cnt, {licorne_code, checker_code, liquid_java_code}),
 ]
 
-hs_excluded_headers = {hs_failed, hs_tn_cnt}
+hs_excluded_headers = {hs_failed, hs_aux_ref_cnt}
+
+failure_marker = "\\failure"
 
 
 class Entry:
@@ -231,6 +245,7 @@ def create_per_example_dict(data: List[Tuple[str, Dict[str, Entry]]]) \
                 hg_sig_cstr_cnt: sum(
                     [e.param_constraints_desired_cnt + e.return_type_constraints_desired_cnt for e in ex_general_data]),
                 hg_units_cnt: sum([1 for e in ex_general_data]),
+                hg_bugs_cnt: sum([1 for e in ex_general_data if e.has_bug]),
             }
             example_per_lang_metrics: Dict[str, Dict[str, Any]] = dict([(h, {}) for h, _ in per_lang_headers])
             for lang_id, dic in data:
@@ -276,7 +291,7 @@ def create_table(all_data: Dict[str, Tuple[Dict[str, Any], Dict[str, Dict[str, i
                 for lang_id in languages:
                     if lang_id not in h_langs:
                         continue
-                    row.append("F" if per_lang_metrics[hs_failed][lang_id] else per_lang_metrics[h][lang_id])
+                    row.append(failure_marker if per_lang_metrics[hs_failed][lang_id] else per_lang_metrics[h][lang_id])
             table.append(row)
     return table
 
@@ -292,60 +307,100 @@ def write_csv(table: List[List[str]], languages: List[str]) -> None:
             wr.writerow(row)
 
 
-def mk_latex_table(table: List[List[str]], languages: List[str]) -> str:
-    col_settings = "| "
-    for _ in general_headers:
-        col_settings += "c "
-    for h, h_langs in per_lang_headers:
-        if h not in hs_excluded_headers:
-            col_settings += "| "
-            for _ in range(len(h_langs)):
-                col_settings += "c "
-    col_settings += "|"
-    rs = "\\begin{tabular}{ " + col_settings + " }\n"
-    rs += "\\toprule\n"
-    header_1 = ([textsc(h) for h in general_headers]
-                + ["\\multicolumn{" + str(len(h_langs)) + "}{c}{" + textsc(h) + "}" for h, h_langs in per_lang_headers
-                   if h not in hs_excluded_headers])
-    header_2 = ["" for _ in general_headers] + [textsc(l) for h, h_langs in per_lang_headers for l in
-                                                languages if l in h_langs and h not in hs_excluded_headers]
+def ensure_str(table: List[List[str]]):
+    for row in table:
+        for i in range(len(row)):
+            row[i] = str(row[i])
 
-    def mk_row(row: List[Any]):
-        row_str = ""
-        for i, cell in enumerate(row):
-            if i > 0:
-                row_str += " & "
-            cell = str(cell)
-            if i == 0 and cell.lower() != "total":
-                cell = textsc(cell)
-            row_str += cell
-        row_str += " \\\\\n"
-        return row_str
 
-    rs += mk_row(header_1)
-    rs += mk_row(header_2)
-    rs += "\\midrule\n"
-    for i, row in enumerate(table):
-        if i == len(table) - 1:
-            rs += "\\midrule\n"
-        rs += mk_row(row)
-    rs += "\\midrule\n"
-    rs += "\\bottomrule\n"
-    rs += "\\end{tabular}"
+def max_len_per_col(table: List[List[str]], n_rows: int, n_cols: int) -> List[int]:
+    lengths = [0 for _ in range(n_cols)]
+    for row in table:
+        if type(row) == str:
+            continue
+        assert len(row) == n_cols
+        for col in range(n_cols):
+            lengths[col] = max(lengths[col], len(row[col]))
+    return lengths
+
+
+def mk_latex_table(in_table: List[List[str]], languages: List[str]) -> str:
+    #col_settings = "| "
+    #for _ in general_headers:
+    #    col_settings += "c "
+    #for h, h_langs in per_lang_headers:
+    #    if h not in hs_excluded_headers:
+    #        col_settings += "| "
+    #        for _ in range(len(h_langs)):
+    #            col_settings += "c "
+    #col_settings += "|"
+    #rs = "\\begin{tabular}{ " + col_settings + " }\n"
+    #rs += "\\toprule\n"
+    # header_1 = ([textsc(h) for h in general_headers]
+    #            + ["\\multicolumn{" + str(len(h_langs)) + "}{c}{" + textsc(h) + "}" for h, h_langs in per_lang_headers
+    #               if h not in hs_excluded_headers])
+    # header_2 = ["" for _ in general_headers] + [textsc(l) for h, h_langs in per_lang_headers for l in
+    #                                            languages if l in h_langs and h not in hs_excluded_headers]
+    # rs += mk_row(header_1)
+    # rs += mk_row(header_2)
+    
+    out_table = []
+    prev_group = None
+    for i, row in enumerate(in_table):
+        if i == len(in_table) - 1:
+            out_table.append("\\midrule")
+        elif prev_group is not None and row[0] != prev_group:
+            out_table.append("\\cmidrule(l){3-32}")
+        out_row = []
+        for j, cell in enumerate(row):
+            if j == 0:
+                if cell.lower() == "total":
+                    cell = "\\multicolumn{2}{c}{\\textbf{Total}}"
+                elif row[0] == prev_group:
+                    cell = ""
+                else:
+                    n_ex_in_group = len(groups[row[0]])
+                    cell = "\\multirow{" + str(n_ex_in_group) + "}{*}{\\pgroup{" + cell + "}}"
+            elif j == 1 and i != len(in_table) - 1:
+                if cell in on_the_fly_ex_renaming:
+                    cell = on_the_fly_ex_renaming[cell]
+                cell = cell[0].upper() + cell[1:]
+                cell = "\\pex{" + cell + "}"
+            out_row.append(cell)
+        out_table.append(out_row)
+        prev_group = row[0]
+
+    lengths = max_len_per_col(out_table, len(in_table), len(in_table[0]))
+
+    rs = ""
+    for i, row in enumerate(out_table):
+        if type(row) == str:
+            rs += row
+        else:
+            for j, cell in enumerate(row):
+                if j > 0 and not (i == len(out_table) - 1 and j == 1):
+                    rs += " & "
+                if j <= 1:
+                    rs += cell.ljust(lengths[j])
+                else:
+                    rs += cell.rjust(lengths[j])
+            rs += " \\\\\n"
+    
     return rs
 
 
 def add_sum_row(table: List[List[str]]):
     n_cols = len(table[0])
-    sums: List[Any] = [0 for _ in range(n_cols)]
+    sums = [0 for _ in range(2, n_cols)]
     for row in table:
         for i, cell in enumerate(row):
-            if sums[i] is not None and type(cell) == int:
-                sums[i] += int(cell)
+            if i < 2:
+                continue
+            if type(cell) == int:
+                sums[i-2] += int(cell)
             else:
-                sums[i] = None
-    table.append(["" if s is None else str(s) for s in sums])
-    table[-1][0] = "Total"
+                assert cell == failure_marker or not len(cell), f"cell was {cell}"
+    table.append(["total", ""] + [str(s) for s in sums])
 
 
 def main():
@@ -362,6 +417,7 @@ def main():
     languages = [licorne_code, checker_code, liquid_java_code, scala_code]
     table = create_table(per_ex, languages)
     add_sum_row(table)
+    ensure_str(table)
     print("\n\n")
     print(mk_latex_table(table, languages))
     print("\n\n")
