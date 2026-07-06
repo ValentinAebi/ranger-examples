@@ -13,7 +13,7 @@ public class Client {
 
     public static void clearIndex2(ArrayWrapper<? extends Object> a, int i) {   //> Client::clearIndex2 p=(2,0,0/0) r=none FAIL
         if (0 <= i && i < a.size()) {
-            a.set(i, null);
+            a.set(i, null); // incorrectly reports a refinement error
         }
     }
     
