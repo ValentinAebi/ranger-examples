@@ -71,7 +71,16 @@ The script displays the compilation times while running, and writes the stdout a
 
 ⚠️ **Important note**: in the paper, we indicate that Licorne took 16s to compile all examples, while Scala took 34s. We obtained these results on a Windows machine (Lenovo ThinkPad, Windows 11, 64GB RAM, Intel Core Ultra 9 2.3 GHz). When running the same experiments on the same machine but using the Ubuntu-based Docker image, we got about the same compilation time for Licorne (15s), but the Scala compilation times fell down to about 6.7s. While we don't know the exact reason of this difference, we think that this still supports the claim that we make in the paper that Ranger’s typechecking process is fast enough to be practically usable.
 
-4. To run the script that collects the annotations of all units and builds the results table (table 2 in the paper), navigate to the `scripts` directory:
+4. To run the Checker Framework on all examples, navigate to the `java-checker-framework` directory:
+```sh
+cd /opt/ranger-examples/java-checker-framework
+```
+then compile the project (this automatically runs the Checker Framework):
+```sh
+mvn clean compile
+```
+
+5. To run the script that collects the annotations of all units and builds the results table (table 2 in the paper), navigate to the `scripts` directory:
 ```sh
 cd /opt/ranger-examples/scripts/
 ```
@@ -84,7 +93,7 @@ The script additionally runs consistency checks and outputs some warnings to the
 cat /opt/ranger-examples/scripts/out/table.csv
 ```
 
-5. To verify a single Licorne program, navigate to the `licorne` directory
+6. To verify a single Licorne program, navigate to the `licorne` directory
 ```sh
 cd /opt/ranger-examples/licorne
 ```
@@ -98,18 +107,9 @@ java -jar licorne-compiler.jar compile arraymap/
 ```
 
 
-## Running the Checker Framework
-
-The [pom.xml](./java-checker-framework/pom.xml) file in the [Checker Framework directory](./java-checker-framework/) ensures that the Checker Framework is run when compiling. To run it, you need [Java 25](https://www.oracle.com/java/technologies/downloads/#java25) and [Maven](https://maven.apache.org/download.cgi). Then just run
-```sh
-mvn clean compile
-```
-in the [Checker Framework directory](./java-checker-framework/).
-
-
 ## Verifying programs using LiquidJava
 
-Install the LiquidJava VSCode extension from [its Visual Studio Marketplace page](https://marketplace.visualstudio.com/items?itemName=AlcidesFonseca.liquid-java), and open the file that you want to verify. LiquidJava will display error messages next to the code that it cannot verify. The Visual Studio Marketplace page of LiquidJava also provides additional information about the tool.
+We used the LiquidJava VSCode extension to analyze programs using LiquidJava. VSCode and its LiquidJava extension are not installed in the Docker image, but should be easy to install on nearly any machine. If you want to replicate the results that we obtained using LiquidJava, install the LiquidJava VSCode extension from [its Visual Studio Marketplace page](https://marketplace.visualstudio.com/items?itemName=AlcidesFonseca.liquid-java), and open the file that you want to verify. LiquidJava will display error messages next to the code that it cannot verify. The Visual Studio Marketplace page of LiquidJava also provides additional information about the tool.
 
 
 ## Description of the experiments

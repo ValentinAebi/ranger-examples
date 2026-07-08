@@ -7,11 +7,12 @@ ENV TZ="Europe/Zurich"
 RUN \
   apt update && \
   apt -y --no-install-recommends install \
-  openjdk-25-jdk \
-  python3 \
-  curl \
-  bash \
-  gzip
+    openjdk-25-jdk \
+    maven \
+    python3 \
+    curl \
+    bash \
+    gzip
 
 # Scala
 RUN curl -fL https://github.com/coursier/coursier/releases/latest/download/cs-x86_64-pc-linux.gz \
