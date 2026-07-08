@@ -4,7 +4,7 @@ import datetime
 import pathlib
 from typing import Final
 
-n_repeat: Final = 5
+n_repeat: Final = 1
 
 ex_cnt: Final = 14
 

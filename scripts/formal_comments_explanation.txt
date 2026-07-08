@@ -10,7 +10,7 @@ Annotation for a unit:
 p: data relative to parameters
 ret: data relative to the return type (ret=none means constructor, void method, or Unit method)
 
-#annot: all annotations on parameters (hence equal to the number of parameters
+#annot: all annotations on parameters (hence equal to the number of parameters)
 #ref: number of refinements:
   - Licorne: ranges or explicit refinements; intersection types are broken down and we count every component
   - Java Index Checker and LiquidJava: we count every @Annotation
@@ -28,9 +28,9 @@ BUG tag: to mark the units that contain a bug (i.e. the units that we expect to 
 
 
 Note: in order to have the same number of units in all versions of the examples (i.e. the Licorne version, the LiquidJava version, etc.),
-we sometimes ignore auxiliary constructors in Java, or the **unrefined!** return type of Licorne object methods that serve as auxiliary
-constructors. In most cases this does not change anything to the significance of the results, and even when it does, we
-make sure that this does not favor Licorne over the other tools.
+we sometimes ignore auxiliary constructors in Java, or the (unrefined) return type of Licorne object methods that serve as auxiliary
+constructors. In most cases this does not change anything to the significance of the results, and even when it does, the difference is marginal and we
+make sure that it does not favor Licorne over the other tools.
 
 ------------------------------------------------------------------------------------------------------------------------
 What the script does: The Python script collects all the formal comments expressed in the above format. It does so for
