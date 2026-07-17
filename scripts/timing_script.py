@@ -46,7 +46,7 @@ def time_scala():
                 for ex in os.listdir("../scala/src/main/scala"):
                     files = os.listdir("../scala/src/main/scala/" + ex)
                     files = [f"../scala/src/main/scala/{ex}/{f}" for f in files if f.endswith(".scala")]
-                    cmd = ["scalac", "-Ystop-after:typer", *files]
+                    cmd = "scalac -Ystop-after:typer " + " ".join(files)
                     local_start = datetime.datetime.now()
                     subprocess.run(cmd, cwd="../scala", shell=True, stdout=stdout, stderr=stderr)
                     local_delta = datetime.timedelta.total_seconds(datetime.datetime.now() - local_start)
