@@ -2,4 +2,4 @@ temp/
 *.class
 META-INF/
 *.tasty
-ranger-image.tar
+*.tar
