@@ -1,0 +1,17 @@
+java-checker-framework/target/
+
+licorne/temp/
+
+liquid-java/target/
+
+scala/.bsp/
+scala/.idea/
+scala/project/project/
+scala/project/target/
+scala/*.class
+
+scripts/.idea/
+scripts/out/
+scripts/timing-runs/
+
+*.tar
