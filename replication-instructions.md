@@ -79,8 +79,9 @@ then compile the project (this automatically runs the Checker Framework):
 ```sh
 mvn clean compile
 ```
+Issues found by the Checker Framework will be displayed in the console.
 
-5. To run the script that collects the annotations of all units and builds the results table (table 2 in the paper), navigate to the `scripts` directory:
+5. To run the script that collects the formal comments in all units and builds the results table (table 2 in the paper), navigate to the `scripts` directory:
 ```sh
 cd /opt/ranger-examples/scripts/
 ```
@@ -88,7 +89,7 @@ then run the script:
 ```sh
 python3 comparison_script.py
 ```
-The script additionally runs consistency checks and outputs some warnings to the console, referring to the fact that some units are not implemented in LiquidJava and other units are marked as "buggy" in the implementation in one of the frameworks but not in another framework. This is expected, because some annotations that one tool fails to verify may be inexpressible in another tool. The script also outputs a LaTeX version of the table to the console, and a CSV version to a file in the `out` directory. To display it:
+We added the formal comments manually. Some are based on the verirication results displayed by the tools, others are based on manual annotation counting. A precise description of the formal comments system that we used can be found in the [dedicated file](./scripts/formal_comments_explanation.txt). The script additionally runs consistency checks and outputs some warnings to the console, referring to the fact that some units are not implemented in LiquidJava and other units are marked as "buggy" in the implementation in one of the frameworks but not in another framework. This is expected, because some annotations that one tool fails to verify may be inexpressible in another tool. The script also outputs a LaTeX version of the table to the console, and a CSV version to a file in the `out` directory. To display it:
 ```sh
 cat /opt/ranger-examples/scripts/out/table.csv
 ```
@@ -112,10 +113,25 @@ java -jar licorne-compiler.jar compile arraymap/
 We used the LiquidJava VSCode extension to analyze programs using LiquidJava. VSCode and its LiquidJava extension are not installed in the Docker image, but should be easy to install on nearly any machine. If you want to replicate the results that we obtained using LiquidJava, install the LiquidJava VSCode extension from [its Visual Studio Marketplace page](https://marketplace.visualstudio.com/items?itemName=AlcidesFonseca.liquid-java), and open the file that you want to verify. LiquidJava will display error messages next to the code that it cannot verify. The Visual Studio Marketplace page of LiquidJava also provides additional information about the tool.
 
 
-## Description of the experiments
+## Additional information about our experiments
 
 We partitioned the code into *units* (most units are functions). Every unit is annotated according to a system of formal comments, whose precise description can be found [here](./scripts/formal_comments_explanation.txt). 
 The annotations specify, among others, the number of annotations used in that unit, whether or not the unit contains one or more bug(s), and whether or not the tool flags the unit (i.e. reports one or more bug(s) in that particular unit). 
 Our [comparison script](./scripts/comparison_script.py) traverses all files and collects the information specified by the formal comments. It outputs this information as a table, corresponding to table 2 in the paper. 
-It dumps the LaTeX code of the table to the console, and produces a [CSV version](./scripts/out/table.csv) in the [`scripts/out`](./scripts/out/) directory.
+It dumps the LaTeX code of the table to the console, and produces a [CSV version](./scripts/out/table.csv) in the [`scripts/out`](./scripts/out/) directory (of course the link works only after the table has been generated).
 
+
+## Note about the name of some experiments
+
+The names given to some of our examples in the results table differ from the ones we give them in the source files. The following table maps both versions of the names to each other:
+| Name in files | Name in table |
+|---------------|---------------|
+| Motivation    | Decoder       |
+| ic4           | ThirdElem     |
+| ic5           | ArrayLess     |
+| ic7           | RemString     |
+| ic9           | ArrayWrap     |
+| lj1           | Fibonacci     |
+| lj2           | Sum           |
+| lj3           | AbsDiv        |
+| lj4           | Car           |
