@@ -52,7 +52,15 @@
 ```sh
 docker load -i ranger-image.tar
 ```
-Alternatively, you can build the image from the [Dockerfile](./Dockerfile).
+Alternatively, you can pull the image from DockerHub:
+```
+docker pull aebiv/ranger-image
+```
+Or build it from the [Dockerfile](./Dockerfile):
+```
+docker build -t "aebiv/ranger-image" .
+```
+
 
 2. Run the image: in this directory, run:
 ```sh
