@@ -64,7 +64,7 @@ docker build -t "aebiv/ranger-image" .
 
 2. Run the image: in this directory, run:
 ```sh
-docker run -it "ranger-image"
+docker run -it aebiv/ranger-image
 ```
 
 3. To type-check all Licorne and Scala examples at once, navigate to the `scripts` directory:
@@ -77,7 +77,7 @@ python3 timing_script.py
 ```
 The script displays the compilation times while running, and writes the stdout and stderr outputs, as well as the compilation times, to files in the `/opt/ranger-examples/scripts/timing-runs` directory. The Licorne compiler prints errors to stderr, while the stdout file will contain only "Compiler not implemented" messages, which merely mean that the compiler stopped after type-checking because we currently have no backend.
 
-⚠️ **Important note**: in the paper, we indicate that Licorne took 16s to compile all examples, while Scala took 34s. We obtained these results on a Windows machine (Lenovo ThinkPad, Windows 11, 64GB RAM, Intel Core Ultra 9 2.3 GHz). When running the same experiments on the same machine but using the Ubuntu-based Docker image, we got about the same compilation time for Licorne (15s), but the Scala compilation times fell down to about 6.7s. While we don't know the exact reason of this difference, we think that this still supports the claim that we make in the paper that Ranger’s typechecking process is fast enough to be practically usable.
+**Note**: in the paper, we indicate that Licorne took 16s to compile all examples, while Scala took 34s. We obtained these results on a Windows machine (Lenovo ThinkPad, Windows 11, 64GB RAM, Intel Core Ultra 9 2.3 GHz). When running the same experiments on the same machine but using the Ubuntu-based Docker image, we got about the same compilation time for Licorne (15s), but the Scala compilation times fell down to about 21s. While we don't know the exact reason of this difference, this still supports the claim that we make in the paper that Ranger’s typechecking process is fast enough to be practically usable.
 
 4. To run the Checker Framework on all examples, navigate to the `java-checker-framework` directory:
 ```sh
