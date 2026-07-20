@@ -48,7 +48,7 @@
 
 ## Steps to reproduce
 
-1. Load the Docker image: in this directory, run: 
+1. Load the Docker image:
 ```sh
 docker load -i ranger-image.tar
 ```
