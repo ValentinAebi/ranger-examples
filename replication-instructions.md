@@ -124,7 +124,7 @@ cat /opt/ranger-examples/scripts/out/table.csv
 
 ## Verifying a single Ranger example
 
-If you want to verify a single Licorne program, navigate to the `licorne` directory
+If you want to verify a single Licorne program, navigate to the `licorne` directory:
 ```sh
 cd /opt/ranger-examples/licorne
 ```
