@@ -1,5 +1,8 @@
+replication/
 temp/
-*.class
+
 META-INF/
+*.class
 *.tasty
+
 *.tar
