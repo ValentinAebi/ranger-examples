@@ -5,45 +5,56 @@
 
 ```text
 /
-|_ java-checker-framework/ ......................... Checker Framework version of our examples
-|   |_ pom.xml ..................................... Maven configuration file
-|   |_ src/main/java/org/example/
-|       |_ arraymap/ ............................... Every package corresponds to one example
-|       |   |_ ArrayMap.java
-|       |   |_ ArrayUtils.java
-|       |_ datetime/
-|       |   |_ ...
-|       |_ ...
-|_ licorne/ ........................................ Licorne/Ranger version of our examples
-|   |_ arraymap/ ................................... Every subfolder corresponds to one example
-|   |   |_ arrays/Array.lic ........................ Some examples are split into packages
-|   |   |_ maps/
-|   |   |   |_ ArrayMap.lic
-|   |   |   |_ Map.lic
-|   |   |_ general_aliases.lic
-|   |   |_ OrderedCollections.lic
-|   |_ datetime/
-|   |   |_ ...
-|   |_ ...
-|_ liquid-java/ .................................... LiquidJava version of our examples
-|   |_ src/main/java/
-|   |   |_ datetime ................................ Every package corresponds to one example
-|   |   |   |_ ...
-|   |   |_ ...
-|_ scala/ .......................................... Scala version of our examples
-|   |_ build.sbt ................................... SBT (Scala Build Tool) configuration file
-|   |_ src/main/scala/
-|   |   |_ arraymap/ ............................... Every package corresponds to one example
-|   |   |   |_ ArrayMap.scala
-|   |   |_ ...
-|_ scripts/ ........................................ Automation scripts
-|   |_ comparison_script.py ........................ Script that collects the data in the formal comments and builds the results table
-|   |_ timing_script.py ............................ Script that runs and times the Ranger and Scala type-checkers
-|   |_ formal_comments_explanation.txt ............. Description of the system of formal comments that we use
-|_ Dockerfile
-|_ README.md ....................................... Readme of the GitHub repository containing our examples (please read replication-instructions.md first)
-|_ replication-instructions.md ..................... CURRENT FILE
+|_ README.md ................................... [CURRENT FILE] Contains the replication instructions, please start from here
+|_ ranger-image.tar ........................................... Docker image
+|_ examples/
+   |_ java-checker-framework/ ................................. Checker Framework version of our examples
+   |   |_ pom.xml ............................................. Maven configuration file
+   |   |_ src/main/java/org/example/
+   |       |_ arraymap/ ....................................... Every package corresponds to one example
+   |       |   |_ ArrayMap.java
+   |       |   |_ ArrayUtils.java
+   |       |_ datetime/
+   |       |   |_ ...
+   |       |_ ...
+   |_ licorne/ ................................................ Licorne/Ranger version of our examples
+   |   |_ arraymap/ ........................................... Every subfolder corresponds to one example
+   |   |   |_ arrays/Array.lic ................................ Some examples are split into packages
+   |   |   |_ maps/
+   |   |   |   |_ ArrayMap.lic
+   |   |   |   |_ Map.lic
+   |   |   |_ general_aliases.lic
+   |   |   |_ OrderedCollections.lic
+   |   |_ datetime/
+   |   |   |_ ...
+   |   |_ ...
+   |_ liquid-java/ ........................................... LiquidJava version of our examples
+   |   |_ src/main/java/
+   |   |   |_ datetime ....................................... Every package corresponds to one example
+   |   |   |   |_ ...
+   |   |   |_ ...
+   |_ scala/ ................................................. Scala version of our examples
+   |   |_ build.sbt .......................................... SBT (Scala Build Tool) configuration file
+   |   |_ src/main/scala/
+   |   |   |_ arraymap/ ...................................... Every package corresponds to one example
+   |   |   |   |_ ArrayMap.scala
+   |   |   |_ ...
+   |_ scripts/ ............................................... Automation scripts
+   |   |_ comparison_script.py ............................... Script that collects the data in the formal comments and builds the results table
+   |   |_ timing_script.py ................................... Script that runs and times the Ranger and Scala type-checkers
+   |   |_ formal_comments_explanation.txt .................... Description of the system of formal comments that we use
+   |_ Dockerfile ............................................. The Dockerfile that we used to generate the image
+   |_ practical_range_refinement_types_with_inference.pdf .... The paper, extended with the replication claims as an appendix
+   |_ description.md ......................................... Readme of the GitHub repository, mostly redundant with README.md
 ```
+
+## Reproducibility claims
+
+We claim the *available* and *functional* badges.
+
+Our [timing script](./scripts/timing_script.py), which typechecks all examples in Ranger and Scala, shows that Ranger can check programs in a practical amount of time, while clearly and precisely reporting errors. This supports our claims in the last paragraph of the evaluation section (section 5) of the paper.
+
+Ranger code examples, together with our [comparison script](./scripts/comparison_script.py) that analyzes the formal comments we wrote next to code units, show that Ranger can typecheck all of our 14 examples without annotations besides the ones in method signatures and with a single use of the hybrid cast operator. This reproduces the results displayed in table 2 in the paper. We additionally provide a [description of our system of formal comments](./scripts/formal_comments_explanation.txt).
 
 
 ## Steps to reproduce
@@ -67,6 +78,12 @@ docker build -t "aebiv/ranger-image" .
 docker run -it aebiv/ranger-image
 ```
 
+**Note**: This image was built on an x64-based machine. On MacOS, you will probably need to add the `--platform linux/amd64` option.
+
+You may want to perform the following sanity checks:
+- `javac -version` should output `javac 25.0.3`
+- `scalac -version` should output `Scala compiler version 3.8.2 -- Copyright 2002-2026, LAMP/EPFL`.
+
 3. To type-check all Licorne and Scala examples at once, navigate to the `scripts` directory:
 ```sh
 cd /opt/ranger-examples/scripts/
@@ -87,7 +104,9 @@ then compile the project (this automatically runs the Checker Framework):
 ```sh
 mvn clean compile
 ```
-Issues found by the Checker Framework will be displayed in the console.
+Running this command for the first time will pull data from the Internet, so you'll need internet connectivity for that part.
+
+Issues found by the Checker Framework will be displayed in the console, so it is normal to get "ERROR" messages (we expect 21 of them, and it is expected that they get displayed twice).
 
 5. To run the script that collects the formal comments in all units and builds the results table (table 2 in the paper), navigate to the `scripts` directory:
 ```sh
@@ -97,12 +116,15 @@ then run the script:
 ```sh
 python3 comparison_script.py
 ```
-We added the formal comments manually. Some are based on the verirication results displayed by the tools, others are based on manual annotation counting. A precise description of the formal comments system that we used can be found in the [dedicated file](./scripts/formal_comments_explanation.txt). The script additionally runs consistency checks and outputs some warnings to the console, referring to the fact that some units are not implemented in LiquidJava and other units are marked as "buggy" in the implementation in one of the frameworks but not in another framework. This is expected, because some annotations that one tool fails to verify may be inexpressible in another tool. The script also outputs a LaTeX version of the table to the console, and a CSV version to a file in the `out` directory. To display it:
+We added the formal comments manually. Some are based on the verification results displayed by the tools, others are based on manual annotation counting. A precise description of the formal comments system that we used can be found in the [dedicated file](./scripts/formal_comments_explanation.txt). The script additionally runs consistency checks and outputs some warnings to the console, referring to the fact that some units are not implemented in LiquidJava and other units are marked as "buggy" in the implementation in one of the frameworks but not in another framework. This is expected, because some annotations that one tool fails to verify may be inexpressible in another tool. The script also outputs a LaTeX version of the table to the console, and a CSV version to a file in the `out` directory. To display it:
 ```sh
 cat /opt/ranger-examples/scripts/out/table.csv
 ```
 
-6. To verify a single Licorne program, navigate to the `licorne` directory
+
+## Verifying a single Ranger example
+
+If you want to verify a single Licorne program, navigate to the `licorne` directory
 ```sh
 cd /opt/ranger-examples/licorne
 ```
