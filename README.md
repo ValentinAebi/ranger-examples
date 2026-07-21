@@ -1,7 +1,5 @@
 # Range verification examples
 
-**This README is for the public GitHub repository. Replication instructions can be found in the [dedicated file](./replication-instructions.md).**
-
 This repository contains example programs demonstrating refinement types, in particular dependent range types. It serves as a comparison of the [Licorne](https://github.com/ValentinAebi/licorne-lang) experimental programming language with the following type refinement systems:
 
 - The Java Checker Framework: [https://checkerframework.org/](https://checkerframework.org/) (more precisely the Index Checker and the Constants Checker)
